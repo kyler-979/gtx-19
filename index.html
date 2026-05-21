@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GT-XTREME BEARING Inventory System</title>
+  <style>
+    :root {
+      --grass: #60a917;
+      --black-bg: #000;
+      --black-card: #121212;
+      --gray-dark: #1e1e1e;
+      --white: #fff;
+      --gray-text: #333;
+      --cost: #4caf50;
+      --group: #ff9800;
+      --sell: #f44336;
+      --cash: #2196f3;
+    }
+    * {margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif;}
+    body {background:var(--black-bg);color:var(--white);}
+    .container {max-width:1400px;margin:0 auto;padding:20px;}
+    header {text-align:center;padding:16px;background:var(--grass);border-radius:8px;margin-bottom:15px;}
+    header h1 {font-size:24px;}
+    .sync-btn{background:#fff;color:var(--grass);border:none;padding:6px 12px;border-radius:4px;cursor:pointer;}
+    .logout-btn{background:#ef4444;color:#fff;border:none;padding:5px 10px;border-radius:4px;cursor:pointer;font-size:12px;}
+    .top-bar {display:flex;justify-content:space-between;align-items:center;gap:20px;margin-bottom:20px;}
+    .search-wrapper {position:relative;width:400px;}
+    #stockSearch {width:100%;padding:10px 45px 10px 12px;border-radius:6px;border:1px solid var(--gray-dark);background:#111;color:#fff;font-size:14px;}
+    .add-btn {position:absolute;right:6px;top:50%;transform:translateY(-50%);width:32px;height:32px;border-radius:6px;background:var(--grass);color:#fff;border:none;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+    .menu {display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+    .menu button {padding:9px 14px;border-radius:6px;background:#111;border:1px solid var(--grass);color:var(--grass);font-size:13px;cursor:pointer;white-space:nowrap;}
+    .menu button.active {background:var(--grass);color:#fff;}
+    .module {display:none;background:var(--black-card);padding:20px;border-radius:8px;border:1px solid var(--gray-dark);margin-bottom:20px;}
+    .module.active {display:block;}
+    .grid-container {display:grid;grid-template-columns:repeat(5,1fr);gap:16px;}
+    .card {border-radius:8px;padding:12px;background:#fff;color:var(--gray-text);border:1px solid #ddd;font-size:12px;cursor:pointer;transition:transform 0.2s;}
+    .card:hover {transform:translateY(-2px);}
+    .card-img-wrap {width:100%;height:140px;border-radius:6px;overflow:hidden;background:#f5f5f5;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+    .card-img {width:100%;height:100%;object-fit:cover;}
+    .card-info {margin-top:10px;line-height:1.4;}
+    .price-cost {color:var(--cost);}
+    .price-group {color:var(--group);}
+    .price-sell {color:var(--sell);}
+    .price-cash {color:var(--cash);}
+    .modal {display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);justify-content:center;align-items:center;z-index:1000;}
+    .modal-content {background:var(--black-card);border-radius:8px;width:90%;max-width:780px;padding:24px;position:relative;color:#fff;max-height:90vh;overflow-y:auto;}
+    .modal-close {position:absolute;top:15px;right:15px;font-size:22px;cursor:pointer;color:#fff;}
+    .modal-row {display:flex;gap:20px;flex-wrap:wrap;}
+    .modal-col {flex:1;min-width:280px;}
+    .form-group {margin-bottom:16px;}
+    .form-group label {display:block;margin-bottom:6px;color:#ccc;font-weight:bold;}
+    .form-group input,.form-group select {width:100%;padding:10px;border:1px solid var(--gray-dark);border-radius:4px;background:#000;color:#fff;}
+    .btn-modal {background:var(--grass);color:#fff;padding:10px 25px;border:none;border-radius:4px;cursor:pointer;}
+    .btn-delete {background:#ef4444;color:#fff;border:none;padding:10px 20px;border-radius:4px;cursor:pointer;margin-left:10px;}
+    .photo-list {display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;}
+    .photo-thumb {width:70px;height:70px;object-fit:cover;border-radius:4px;border:1px solid var(--gray-dark);}
+    .photo-thumb-wrap {position:relative;}
+    .photo-thumb-wrap .del {position:absolute;top:-6px;right:-6px;background:#ef4444;color:#fff;width:18px;height:18px;border-radius:50%;font-size:12px;text-align:center;cursor:pointer;}
+    .photo-add-btn {width:70px;height:70px;border:1px dashed var(--grass);border-radius:4px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--grass);font-size:20px;}
+    .lightbox {display:none;position:fixed;inset:0;background:rgba(0,0,0.95);z-index:2000;align-items:center;justify-content:center;flex-direction:column;padding:20px;}
+    .lightbox img {max-width:90%;max-height:70vh;border-radius:6px;}
+    .lightbox-thumbs {display:flex;gap:8px;margin-top:15px;flex-wrap:wrap;justify-content:center;}
+    .lightbox-thumb {width:60px;height:60px;object-fit:cover;border-radius:4px;cursor:pointer;border:2px solid transparent;}
+    .lightbox-thumb.active {border-color:var(--grass);}
+    .lightbox-close {position:absolute;top:20px;right:20px;font-size:30px;color:#fff;cursor:pointer;}
+    .avatar {width:120px;height:120px;border-radius:50%;object-fit:cover;background:#222;display:block;margin:0 auto 15px;border:2px solid var(--grass);}
+    table {width:100%;border-collapse:collapse;}
+    th, td {padding:10px;text-align:left;border-bottom:1px solid #333;color:#fff;}
+    #loginPage {position:fixed;inset:0;background:var(--black-bg);display:flex;justify-content:center;align-items:center;z-index:9999;}
+    .login-card {background:var(--black-card);border-radius:8px;padding:40px;width:100%;max-width:400px;border:1px solid var(--gray-dark);}
+    .login-card h2 {text-align:center;margin-bottom:30px;color:var(--grass);}
+    .login-btn {width:100%;background:var(--grass);color:#fff;padding:12px;border:none;border-radius:4px;cursor:pointer;font-size:16px;margin-top:10px;}
+    .login-error {color:#ef4444;text-align:center;margin-bottom:15px;display:none;}
+    .user-info {display:flex;align-items:center;gap:8px;color:#fff;font-size:14px;}
+    .user-avatar-small {width:32px;height:32px;border-radius:50%;object-fit:cover;border:2px solid var(--grass);}
+  </style>
+</head>
+<body>
+
+<div id="loginPage">
+  <div class="login-card">
+    <h2>System Login</h2>
+    <div class="login-error" id="loginError">Account or password error</div>
+    <div class="form-group">
+      <label>Username</label>
+      <input type="text" id="loginUsername" placeholder="Username">
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" id="loginPwd" placeholder="Password">
+    </div>
+    <button class="login-btn" onclick="login()">Login</button>
+  </div>
+</div>
+
+<div class="container">
+  <header><h1>GT-XTREME BEARING Inventory System</h1></header>
+  <div class="top-bar">
+    <div class="search-wrapper">
+      <input type="text" id="stockSearch" placeholder="Search Name / SKU / Size">
+      <button class="add-btn" id="addStockBtn">+</button>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div class="user-info" id="userInfoBar" style="display:none;">
+        <img id="topAvatar" class="user-avatar-small" src="">
+        <span id="welcomeText">Welcome</span>
+      </div>
+      <div class="menu" id="menuWrapper">
+        <button class="menu-btn active" data-target="stock">Inventory</button>
+        <button class="menu-btn" data-target="category">Categories</button>
+        <button class="menu-btn" data-target="user" id="userMenuBtn">Users</button>
+        <button class="menu-btn" data-target="profile">Profile</button>
+        <button class="sync-btn" id="refreshCloud">Refresh Cloud</button>
+      </div>
+      <button class="logout-btn" id="logoutBtn" style="display:none" onclick="logout()">Log Out</button>
+    </div>
+  </div>
+
+  <div class="module active" id="stock"><div class="grid-container" id="stockGrid"></div></div>
+  <div class="module" id="category"><table><thead><tr><th>Category Name</th><th>Action</th></tr></thead><tbody id="categoryTableBody"></tbody></table></div>
+  <div class="module" id="user"><div style="margin-bottom:15px;"><button class="btn-modal" id="addUserBtn">Add New User</button></div><table><thead><tr><th>Username</th><th>Role</th><th>Action</th></tr></thead><tbody id="userTableBody"></tbody></table></div>
+  <div class="module" id="profile">
+    <h2 style="text-align:center;margin-bottom:20px;">My Profile</h2>
+    <img id="avatarImg" class="avatar" src="">
+    <div style="text-align:center;margin-bottom:20px;">
+      <button class="btn-modal" onclick="avatarUpload.click()">Change Avatar</button>
+      <input type="file" id="avatarUpload" accept="image/*" style="display:none;">
+    </div>
+    <div class="form-group"><label>Name</label><input type="text" id="profileName"></div>
+    <div class="form-group"><label>New Password</label><input type="password" id="profilePwd"></div>
+    <button class="btn-modal" onclick="saveProfile()">Save Changes</button>
+  </div>
+</div>
+
+<div class="modal" id="stockModal">
+  <div class="modal-content">
+    <span class="modal-close">&times;</span>
+    <h2 id="stockModalTitle">Add Item</h2>
+    <div class="modal-row">
+      <div class="modal-col">
+        <div class="form-group"><label>SKU</label><input id="goodId"></div>
+        <div class="form-group"><label>Name</label><input id="goodName"></div>
+        <div class="form-group"><label>Category</label><select id="goodCategory"></select></div>
+        <div class="form-group"><label>Size</label><input id="goodSize"></div>
+        <div class="form-group"><label>Qty</label><input type="number" id="goodStock" min="0"></div>
+      </div>
+      <div class="modal-col">
+        <div class="form-group"><label>Cost</label><input type="number" id="goodCost" step="0.01"></div>
+        <div class="form-group"><label>Group</label><input type="number" id="goodGroup" step="0.01"></div>
+        <div class="form-group"><label>Sell</label><input type="number" id="goodSell" step="0.01"></div>
+        <div class="form-group"><label>Cash</label><input type="number" id="goodCash" step="0.01"></div>
+        <div class="form-group"><label>Photos</label>
+          <div class="photo-list" id="photoList"></div>
+          <input type="file" id="photoUpload" style="display:none;">
+        </div>
+      </div>
+    </div>
+    <button class="btn-modal" id="saveStockBtn">Save</button>
+    <button class="btn-delete" id="deleteInModalBtn" style="display:none;">Delete</button>
+  </div>
+</div>
+<div class="modal" id="categoryModal">
+  <div class="modal-content">
+    <span class="modal-close">&times;</span>
+    <h2 id="categoryModalTitle">Add Category</h2>
+    <div class="form-group"><label>Name</label><input id="categoryName"></div>
+    <button class="btn-modal" id="saveCategoryBtn">Save</button>
+  </div>
+</div>
+<div class="modal" id="userModal">
+  <div class="modal-content">
+    <span class="modal-close">&times;</span>
+    <h2 id="userModalTitle">Add User</h2>
+    <div class="form-group"><label>Username</label><input id="userName"></div>
+    <div class="form-group"><label>Password</label><input type="password" id="userPwd"></div>
+    <div class="form-group"><label>Role</label>
+      <select id="userRole"><option value="admin">Admin</option><option value="user">User</option></select>
+    </div>
+    <button class="btn-modal" id="saveUserBtn">Save</button>
+  </div>
+</div>
+<div class="lightbox" id="lightbox">
+  <span class="lightbox-close">&times;</span>
+  <img id="lightboxImg">
+  <div class="lightbox-thumbs" id="lightboxThumbs"></div>
+</div>
+
+<script>
+const API_URL = "https://script.google.com/macros/s/AKfycbzhnGKn-3ecyoEzwJf2-6-7jEPg35H1TxAY3xJiVH-PO1pxLLZ0Dh81HL0wugRwteRktQ/exec";
+const SYNC_KEY = "stock_sync_data";
+
+let localData = {
+  stock: [],
+  category: ["BEARING", "OIL SEALS", "BALL BEARING", "HUB BEARING","CLUTCH BEARING","TAPERED BEARING", "PILLOW BLOCK","FRONT KIT","REAR KIT"],
+  users: [
+    { username: "admin", pwd: "123", role: "admin", name: "Admin", avatar: "" },
+    { username: "ocs", pwd: "0833", role: "admin", name: "OCS", avatar: "" },
+    { username: "gtx", pwd: "123", role: "user", name: "GTX", avatar: "" }
+  ]
+};
+
+let currentEditId = null,tempPhotos = [],lightboxPhotos = [],lightboxIndex = 0;
+let currentUser = null;
+let autoRefreshTimer = null;
+
+function login() {
+  const username = document.getElementById("loginUsername").value.trim();
+  const pwd = document.getElementById("loginPwd").value.trim();
+  const errorEl = document.getElementById("loginError");
+  const user = localData.users.find(u => u.username === username && u.pwd === pwd);
+  if (user) {
+    currentUser = user;
+    document.getElementById("loginPage").style.display = "none";
+    document.getElementById("logoutBtn").style.display = "inline-block";
+    document.getElementById("userInfoBar").style.display = "flex";
+    if(user.role !== "admin") document.getElementById("userMenuBtn").style.display = "none";
+    else document.getElementById("userMenuBtn").style.display = "inline-block";
+    loadLocalCache(); fetchCloudData();
+    if(autoRefreshTimer) clearInterval(autoRefreshTimer);
+    autoRefreshTimer = setInterval(fetchCloudData, 60000);
+    errorEl.style.display = "none";
+  } else {
+    errorEl.textContent = "Invalid username or password";
+    errorEl.style.display = "block";
+  }
+}
+
+document.getElementById("loginPwd").addEventListener("keydown", e=>e.key==="Enter"&&login());
+document.getElementById("loginUsername").addEventListener("keydown", e=>e.key==="Enter"&&login());
+
+function updateUserBar(){
+  if(!currentUser) return;
+  document.getElementById("topAvatar").src = currentUser.avatar || "";
+  document.getElementById("welcomeText").textContent = "Welcome, " + (currentUser.name || currentUser.username);
+}
+
+function logout() {
+  if (!confirm("Confirm logout?")) return;
+  if(autoRefreshTimer) clearInterval(autoRefreshTimer);
+  currentUser = null;
+  document.getElementById("loginPage").style.display = "flex";
+  document.getElementById("logoutBtn").style.display = "none";
+  document.getElementById("userInfoBar").style.display = "none";
+  document.getElementById("loginUsername").value = "";
+  document.getElementById("loginPwd").value = "";
+}
+
+function parseCSV(csvText){
+  const lines = csvText.trim().split("\n");
+  if(lines.length<2) return [];
+  const headers = lines[0].split(",");
+  const res = [];
+  for(let i=1;i<lines.length;i++){
+    const row = lines[i].split(",");
+    const obj = {};
+    headers.forEach((h,idx)=>{
+      let val = row[idx]||"";
+      if(["stock","cost","group","sell","cash"].includes(h)) obj[h] = parseFloat(val)||0;
+      else if(h==="photos") obj[h] = val.split("|").filter(s=>s.trim());
+      else obj[h] = val.trim();
+    });
+    res.push(obj);
+  }
+  return res;
+}
+
+async function fetchCloudData(){
+  try{
+    const res = await fetch(API_URL);
+    const csv = await res.text();
+    localData.stock = parseCSV(csv);
+    saveLocalCache(); renderAll();
+  }catch(e){ loadLocalCache(); }
+}
+
+async function syncToSheet(){
+  try{
+    await fetch(API_URL,{
+      method:"POST",
+      body:JSON.stringify({action:"updateAll",list:localData.stock})
+    });
+    return true;
+  }catch(e){ alert("Sync failed"); return false; }
+}
+
+function saveLocalCache(){localStorage.setItem(SYNC_KEY,JSON.stringify(localData));}
+function loadLocalCache(){
+  const cache = localStorage.getItem(SYNC_KEY);
+  if(cache) localData = JSON.parse(cache);
+  renderAll();
+  if (currentUser) { loadProfile(); updateUserBar(); }
+}
+
+document.querySelectorAll(".menu-btn").forEach(btn=>{
+  btn.addEventListener("click",()=>{
+    document.querySelectorAll(".menu-btn").forEach(b=>b.classList.remove("active"));
+    document.querySelectorAll(".module").forEach(m=>m.classList.remove("active"));
+    btn.classList.add("active");
+    document.getElementById(btn.dataset.target).classList.add("active");
+  });
+});
+document.getElementById("refreshCloud").onclick = fetchCloudData;
+
+function renderAll(){renderStock();renderCategory();renderUser();}
+function renderStock(){
+  const grid = document.getElementById("stockGrid");
+  grid.innerHTML = "";
+  const kw = stockSearch.value.toLowerCase().trim();
+  const list = localData.stock.filter(item=>
+    (item.name||"").toLowerCase().includes(kw)||
+    (item.id||"").toLowerCase().includes(kw)||
+    (item.size||"").toLowerCase().includes(kw)
+  );
+  if(list.length===0){
+    grid.innerHTML="<div style='color:#999;padding:30px;width:100%;text-align:center'>No data</div>";
+    return;
+  }
+  list.forEach(item=>{
+    const pics = item.photos||[];
+    const first = pics[0]||"";
+    const card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = `
+      <div class="card-img-wrap" data-pic='${JSON.stringify(pics)}'>
+        ${first?`<img class="card-img" src="${first}">`:"No Image"}
+      </div>
+      <div class="card-info">
+        <div><strong>${item.id||""}</strong></div>
+        <div>${item.name||""}</div>
+        <div>Size: ${item.size||"-"}</div>
+        <div class="price-cost">Cost: ${Number(item.cost||0).toFixed(2)}</div>
+        <div class="price-group">Group: ${Number(item.group||0).toFixed(2)}</div>
+        <div class="price-sell">Sell: ${Number(item.sell||0).toFixed(2)}</div>
+        <div class="price-cash">Cash: ${Number(item.cash||0).toFixed(2)}</div>
+      </div>
+    `;
+    card.querySelector(".card-img-wrap").onclick = e=>{
+      e.stopPropagation();
+      const p = JSON.parse(card.querySelector(".card-img-wrap").dataset.pic);
+      if(p.length){lightboxPhotos=p;openLightbox(0);}
+    };
+    card.onclick = e=>{if(!e.target.closest(".card-img-wrap")) editStock(item.id);};
+    grid.appendChild(card);
+  });
+}
+function openLightbox(idx){
+  lightboxIndex=idx;
+  const img = lightboxImg; const thumbs = lightboxThumbs;
+  img.src = lightboxPhotos[idx]; thumbs.innerHTML = "";
+  lightboxPhotos.forEach((src,i)=>{
+    const t = document.createElement("img");
+    t.className = "lightbox-thumb"+(i===idx?" active":"");
+    t.src=src; t.onclick=()=>openLightbox(i);
+    thumbs.appendChild(t);
+  });
+  lightbox.style.display="flex";
+}
+lightbox.querySelector(".lightbox-close").onclick = ()=>lightbox.style.display="none";
+
+function renderCategory(){
+  const body = categoryTableBody; const sel = goodCategory;
+  body.innerHTML=""; sel.innerHTML="";
+  localData.category.forEach(c=>{
+    body.innerHTML += `<tr><td>${c}</td><td><button onclick="editCategory('${c}')" class="btn-modal" style="padding:6px 10px;font-size:12px">Edit</button><button onclick="deleteCategory('${c}')" class="btn-delete" style="padding:6px 10px;font-size:12px">Del</button></td></tr>`;
+    sel.innerHTML += `<option value="${c}">${c}</option>`;
+  });
+}
+function renderUser(){
+  const body = userTableBody;
+  body.innerHTML="";
+  localData.users.forEach(u=>{
+    body.innerHTML += `<tr><td>${u.username}</td><td>${u.role}</td><td><button onclick="editUser('${u.username}')" class="btn-modal" style="padding:6px 10px;font-size:12px">Edit</button><button onclick="deleteUser('${u.username}')" class="btn-delete" style="padding:6px 10px;font-size:12px">Del</button></td></tr>`;
+  });
+}
+function renderPhotoList(){
+  const list = photoList;
+  list.innerHTML="";
+  tempPhotos.forEach((s,i)=>{
+    list.innerHTML += `<div class="photo-thumb-wrap"><img class="photo-thumb" src="${s}"><span class="del" onclick="tempPhotos.splice(${i},1);renderPhotoList()">×</span></div>`;
+  });
+  if(tempPhotos.length<5) list.innerHTML += `<div class="photo-add-btn" onclick="photoUpload.click()">+</div>`;
+}
+photoUpload.onchange = e=>{
+  const f = e.target.files[0]; if(!f)return;
+  const r = new FileReader();
+  r.onload = ev=>{tempPhotos.push(ev.target.result);renderPhotoList();};
+  r.readAsDataURL(f);
+};
+
+addStockBtn.onclick = ()=>{
+  currentEditId=null; tempPhotos=[];
+  stockModalTitle.textContent="Add Item";
+  stockModal.querySelectorAll("input").forEach(i=>i.value="");
+  goodStock.value=0; renderPhotoList();
+  deleteInModalBtn.style.display="none";
+  stockModal.style.display="flex";
+};
+function editStock(id){
+  const item = localData.stock.find(s=>s.id===id);
+  if(!item)return;
+  currentEditId=id; tempPhotos=[...item.photos||[]];
+  stockModalTitle.textContent="Edit Item";
+  goodId.value=item.id; goodName.value=item.name; goodCategory.value=item.category;
+  goodSize.value=item.size||""; goodStock.value=item.stock||0;
+  goodCost.value=item.cost||0; goodGroup.value=item.group||0;
+  goodSell.value=item.sell||0; goodCash.value=item.cash||0;
+  renderPhotoList(); deleteInModalBtn.style.display="inline-block";
+  stockModal.style.display="flex";
+}
+saveStockBtn.onclick = async()=>{
+  const id = goodId.value.trim();
+  const name = goodName.value.trim();
+  if(!id||!name)return alert("SKU & Name required");
+  const goods = {
+    id,name,category:goodCategory.value,size:goodSize.value,
+    stock:+goodStock.value,cost:+goodCost.value,group:+goodGroup.value,
+    sell:+goodSell.value,cash:+goodCash.value,photos:[...tempPhotos]
+  };
+  if(currentEditId){
+    const idx = localData.stock.findIndex(s=>s.id===currentEditId);
+    if(idx>-1) localData.stock[idx]=goods;
+  }else{
+    if(localData.stock.some(s=>s.id===id))return alert("SKU exists");
+    localData.stock.push(goods);
+  }
+  await syncToSheet();
+  saveLocalCache(); renderAll(); stockModal.style.display="none";
+  alert("Saved & Synced");
+}
+deleteInModalBtn.onclick = async()=>{
+  if(!confirm("Delete?"))return;
+  localData.stock = localData.stock.filter(s=>s.id!==currentEditId);
+  await syncToSheet();
+  saveLocalCache(); renderAll(); stockModal.style.display="none";
+  alert("Deleted & Synced");
+}
+
+function editCategory(o){categoryName.value=o;currentEditId=o;categoryModalTitle.textContent="Edit Category";categoryModal.style.display="flex";}
+function deleteCategory(c){if(!confirm("Delete?"))return;localData.category=localData.category.filter(x=>x!==c);saveLocalCache();renderAll();}
+saveCategoryBtn.onclick = ()=>{
+  const n = categoryName.value.trim();
+  if(!n)return alert("Name required");
+  if(currentEditId) localData.category = localData.category.map(x=>x===currentEditId?n:x);
+  else if(!localData.category.includes(n)) localData.category.push(n);
+  saveLocalCache();renderAll();categoryModal.style.display="none";
+}
+addUserBtn.onclick = ()=>{currentEditId=null;userName.value="";userPwd.value="";userRole.value="user";userModalTitle.textContent="Add User";userModal.style.display="flex";}
+function editUser(u){const us=localData.users.find(x=>x.username===u);if(!us)return;currentEditId=u;userName.value=us.username;userPwd.value=us.pwd;userRole.value=us.role;userModal.style.display="flex";}
+function deleteUser(u){if(u==="admin")return alert("Cannot delete admin");if(!confirm("Delete?"))return;localData.users=localData.users.filter(x=>x.username!==u);saveLocalCache();renderAll();}
+saveUserBtn.onclick = ()=>{
+  const un = userName.value.trim(); const pw = userPwd.value.trim();
+  if(!un||!pw)return alert("Username & Password required");
+  const user = {username:un,pwd:pw,role:userRole.value,name:un,avatar:""};
+  if(currentEditId){
+    const i = localData.users.findIndex(x=>x.username===currentEditId);
+    if(i>-1) localData.users[i]=user;
+  }else if(!localData.users.some(x=>x.username===un)) localData.users.push(user);
+  saveLocalCache();renderAll();userModal.style.display="none";
+}
+function loadProfile(){
+  if (currentUser) {
+    profileName.value = currentUser.name || currentUser.username;
+    avatarImg.src = currentUser.avatar || "";
+    updateUserBar();
+  }
+}
+function saveProfile(){
+  if (!currentUser) return;
+  currentUser.name = profileName.value.trim();
+  if(profilePwd.value.trim()) currentUser.pwd = profilePwd.value.trim();
+  const idx = localData.users.findIndex(u => u.username === currentUser.username);
+  if (idx > -1) localData.users[idx] = currentUser;
+  saveLocalCache(); updateUserBar(); alert("Profile saved");
+}
+avatarUpload.onchange = e=>{
+  const f=e.target.files[0]; if(!f)return;
+  const r=new FileReader();
+  r.onload=ev=>{
+    if (currentUser) {
+      currentUser.avatar = ev.target.result;
+      avatarImg.src = ev.target.result;
+      const idx = localData.users.findIndex(u => u.username === currentUser.username);
+      if (idx > -1) localData.users[idx] = currentUser;
+      saveLocalCache(); updateUserBar();
+    }
+  };
+  r.readAsDataURL(f);
+}
+document.querySelectorAll(".modal-close").forEach(x=>x.onclick=()=>document.querySelectorAll(".modal").forEach(m=>m.style.display="none"));
+stockSearch.oninput = renderStock;
+
+window.onload = function() {
+  loadLocalCache();
+  document.getElementById("loginPage").style.display = "flex";
+  document.getElementById("logoutBtn").style.display = "none";
+  document.getElementById("userInfoBar").style.display = "none";
+};
+</script>
+
+</body>
+</html>
