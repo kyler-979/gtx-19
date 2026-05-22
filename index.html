@@ -6,16 +6,9 @@
   <title>GT-XTREME BEARING Inventory System</title>
   <style>
     :root {
-      --grass: #60a917;
-      --black-bg: #000;
-      --black-card: #121212;
-      --gray-dark: #1e1e1e;
-      --white: #fff;
-      --gray-text: #333;
-      --cost: #4caf50;
-      --group: #ff9800;
-      --sell: #f44336;
-      --cash: #2196f3;
+      --grass: #60a917;--black-bg: #000;--black-card: #121212;
+      --gray-dark: #1e1e1e;--white: #fff;--gray-text: #333;
+      --cost: #4caf50;--group: #ff9800;--sell: #f44336;--cash: #2196f3;
     }
     * {margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif;}
     body {background:var(--black-bg);color:var(--white);}
@@ -144,6 +137,7 @@
         <div class="form-group"><label>Category</label><select id="goodCategory"></select></div>
         <div class="form-group"><label>Size</label><input id="goodSize"></div>
         <div class="form-group"><label>Qty</label><input type="number" id="goodStock" min="0"></div>
+        <div class="form-group"><label>1BOX = ? PCS</label><input type="number" id="goodBoxPcs" min="0" placeholder="PCS"></div>
       </div>
       <div class="modal-col">
         <div class="form-group"><label>Cost</label><input type="number" id="goodCost" step="0.01"></div>
@@ -187,12 +181,13 @@
 </div>
 
 <script>
+// 👉 替换为你新的 Apps Script URL
 const API_URL = "https://script.google.com/macros/s/AKfycbzhnGKn-3ecyoEzwJf2-6-7jEPg35H1TxAY3xJiVH-PO1pxLLZ0Dh81HL0wugRwteRktQ/exec";
 const SYNC_KEY = "stock_sync_data";
 
 let localData = {
   stock: [],
-  category: ["BEARING", "OIL SEALS", "BALL BEARING", "HUB BEARING","CLUTCH BEARING","TAPERED BEARING", "PILLOW BLOCK","FRONT KIT","REAR KIT"],
+  category: ["BEARING", "OIL SEALS", "BALL BEARING", "HUB BEARING","CLUTCH BEARING","TAPERED BEARING", "PILLOW BLOCK","FRONT KIT","REAR KIT", "GREASE&LUBRICANT"],
   users: [
     { username: "admin", pwd: "123", role: "admin", name: "Admin", avatar: "" },
     { username: "ocs", pwd: "0833", role: "admin", name: "OCS", avatar: "" },
@@ -256,7 +251,7 @@ function parseCSV(csvText){
     const obj = {};
     headers.forEach((h,idx)=>{
       let val = row[idx]||"";
-      if(["stock","cost","group","sell","cash"].includes(h)) obj[h] = parseFloat(val)||0;
+      if(["stock","boxPcs","cost","group","sell","cash"].includes(h)) obj[h] = parseFloat(val)||0;
       else if(h==="photos") obj[h] = val.split("|").filter(s=>s.trim());
       else obj[h] = val.trim();
     });
@@ -302,7 +297,6 @@ document.querySelectorAll(".menu-btn").forEach(btn=>{
 });
 document.getElementById("refreshCloud").onclick = fetchCloudData;
 
-function renderAll(){renderStock();renderCategory();renderUser();}
 function renderStock(){
   const grid = document.getElementById("stockGrid");
   grid.innerHTML = "";
@@ -329,6 +323,7 @@ function renderStock(){
         <div><strong>${item.id||""}</strong></div>
         <div>${item.name||""}</div>
         <div>Size: ${item.size||"-"}</div>
+        <div>1BOX = ${Number(item.boxPcs||0)} PCS</div>
         <div class="price-cost">Cost: ${Number(item.cost||0).toFixed(2)}</div>
         <div class="price-group">Group: ${Number(item.group||0).toFixed(2)}</div>
         <div class="price-sell">Sell: ${Number(item.sell||0).toFixed(2)}</div>
@@ -392,7 +387,9 @@ addStockBtn.onclick = ()=>{
   currentEditId=null; tempPhotos=[];
   stockModalTitle.textContent="Add Item";
   stockModal.querySelectorAll("input").forEach(i=>i.value="");
-  goodStock.value=0; renderPhotoList();
+  goodStock.value=0;
+  goodBoxPcs.value=0;
+  renderPhotoList();
   deleteInModalBtn.style.display="none";
   stockModal.style.display="flex";
 };
@@ -403,6 +400,7 @@ function editStock(id){
   stockModalTitle.textContent="Edit Item";
   goodId.value=item.id; goodName.value=item.name; goodCategory.value=item.category;
   goodSize.value=item.size||""; goodStock.value=item.stock||0;
+  goodBoxPcs.value=item.boxPcs||0;
   goodCost.value=item.cost||0; goodGroup.value=item.group||0;
   goodSell.value=item.sell||0; goodCash.value=item.cash||0;
   renderPhotoList(); deleteInModalBtn.style.display="inline-block";
@@ -414,7 +412,9 @@ saveStockBtn.onclick = async()=>{
   if(!id||!name)return alert("SKU & Name required");
   const goods = {
     id,name,category:goodCategory.value,size:goodSize.value,
-    stock:+goodStock.value,cost:+goodCost.value,group:+goodGroup.value,
+    stock:+goodStock.value,
+    boxPcs:+goodBoxPcs.value,
+    cost:+goodCost.value,group:+goodGroup.value,
     sell:+goodSell.value,cash:+goodCash.value,photos:[...tempPhotos]
   };
   if(currentEditId){
