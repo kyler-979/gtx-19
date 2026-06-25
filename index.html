@@ -2,14 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>GT-XTREME BEARING Inventory System</title>
   <style>
     :root {
       --primary-green: #2E7D32;
       --light-green: #4CAF50;
       --bg-dark: #121212;
-      --card-white: #FFFFFF;
+      --card-dark: #1a1a1a;
       --text-light: #F5F5F5;
       --text-dark: #222222;
       --cost: #f44336;
@@ -30,7 +30,7 @@
     }
     .container {max-width:1400px;margin:0 auto;padding:12px;}
     .top-header {
-      background-color: var(--primary-green);
+      background: var(--primary-green);
       color: white;
       padding:12px;
       text-align:center;
@@ -86,7 +86,7 @@
     .nav-button {
       background:transparent;
       color:white;
-      border:1px solid rgba(255,255,255,0.3);
+      border:1px solid rgba(255,255,0.3);
       padding:7px 12px;
       border-radius:4px;
       font-size:13px;
@@ -95,117 +95,64 @@
     }
     .nav-button.active {background:var(--light-green);border-color:var(--light-green);}
     .sync-refresh {background:#fff;color:var(--primary-green);border:none;padding:6px 12px;border-radius:4px;cursor:pointer;font-size:13px;}
-    .logout-btn {background:#ef4444;color:#fff;border:none;padding:6px 10px;border-radius:4px;cursor:pointer;font-size:12px;}
+    .logout-btn {background:var(--danger);color:#fff;border:none;padding:6px 10px;border-radius:4px;cursor:pointer;font-size:12px;}
     .user-info {display:flex;align-items:center;gap:8px;color:#fff;font-size:14px;}
     .user-avatar-small {width:32px;height:32px;border-radius:50%;object-fit:cover;border:2px solid var(--light-green);}
 
-    /* 库存模块 */
-    .module {
-      display:none;
-      background:#1a1a1a;
-      padding:12px;
-      border-radius:8px;
-      margin-bottom:12px;
-    }
+    .module {display:none;background:#1a1a1a;padding:12px;border-radius:8px;margin-bottom:12px;}
     .module.active {display:block;}
     .grid-container {
       display:grid;
       grid-template-columns:repeat(5,1fr);
       gap:12px;
     }
-    @media (max-width:992px) {
-      .grid-container {grid-template-columns:repeat(3,1fr);}
-    }
-    @media (max-width:576px) {
-      .grid-container {grid-template-columns:repeat(2,1fr);}
-    }
+    @media (max-width:992px) {.grid-container {grid-template-columns:repeat(3,1fr);}}
+    @media (max-width:576px) {.grid-container {grid-template-columns:repeat(2,1fr);}}
+
     .product-card {
-      background:#fff;
-      color:#222;
+      background:#fff;color:#222;
       border-radius:8px;
       overflow:hidden;
       cursor:pointer;
-      box-shadow:0 2px 8px rgba(0,0,0,0.2);
+      box-shadow:0 2px 8px rgba(0,0,0.2);
       display:flex;
       flex-direction:column;
     }
     .card-img-wrap {
-      width:100%;
-      height:130px;
-      background:#f5f5f5;
-      display:flex;
-      align-items:center;
-      justify-content:center;
+      width:100%;height:130px;background:#f5f5f5;display:flex;align-items:center;justify-content:center;
     }
     .card-img {width:100%;height:100%;object-fit:cover;}
-    .card-info {
-      width:100%;
-      border:1px solid #000;
-      background:#fff;
-    }
-    .card-sku {
-      padding:8px 10px;
-      font-size:15px;
-      font-weight:bold;
-      border-bottom:2px solid #000;
-    }
-    .card-details {
-      padding:8px 10px;
-      font-size:12px;
-      line-height:1.5;
-      border-bottom:1px solid #000;
-    }
-    .card-price {
-      padding:8px 10px;
-      display:flex;
-      justify-content:space-between;
-      font-size:12px;
-      line-height:1.5;
-    }
+    .card-info {width:100%;border:1px solid #000;background:#fff;}
+    .card-sku {padding:8px 10px;font-size:15px;font-weight:bold;border-bottom:2px solid #000;}
+    .card-details {padding:8px 10px;font-size:12px;line-height:1.5;border-bottom:1px solid #000;}
+    .card-price {padding:8px 10px;display:flex;justify-content:space-between;font-size:12px;line-height:1.5;}
     .price-cost {color:var(--cost);}
     .price-group {color:var(--group);}
     .price-sell {color:var(--sell);}
     .price-cash {color:var(--cash);}
 
-    /* 价格列表卡片样式 */
     .price-card {
-      background:#fff;
-      color:#222;
+      background:#fff;color:#222;
       border-radius:8px;
       overflow:hidden;
-      box-shadow:0 2px 8px rgba(0,0,0,0.3);
+      box-shadow:0 2px 8px rgba(0,0,0.3);
       cursor:pointer;
     }
     .card-head {
-      background:#222;
-      color:#fff;
-      padding:10px 12px;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
+      background:#222;color:#fff;padding:10px 12px;display:flex;justify-content:space-between;align-items:center;
     }
     .card-pid {font-weight:bold;font-size:16px;}
-    .card-list-price {font-size:14px;opacity:0.9;}
-    .discount-row {
-      display:grid;
-      grid-template-columns:1fr 1fr 1fr 1fr;
-    }
-    .discount-cell {
-      padding:14px 4px;
-      text-align:center;
-      color:#fff;
-    }
+    .card-list-price {font-size:14;opacity:0.9;}
+    .discount-row {display:grid;grid-template-columns:1fr 1fr 1fr 1fr;}
+    .discount-cell {padding:14px 4px;text-align:center;color:#fff;}
     .dis-72 {background:var(--dis72);}
     .dis-70 {background:var(--dis70);}
     .dis-68 {background:var(--dis68);}
     .dis-65 {background:var(--dis65);}
     .dis-label {font-size:12px;margin-bottom:4px;opacity:0.9;}
     .dis-value {font-size:17px;font-weight:bold;}
-    .empty-tip {
-      width:100%;text-align:center;padding:40px 0;color:#aaa;font-size:16px;
-    }
+    .empty-tip {width:100%;text-align:center;padding:40px 0;color:#aaa;font-size:16px;}
 
-    /* 弹窗通用 */
     .modal {
       display:none;
       position:fixed;
@@ -229,30 +176,20 @@
     }
     .modal-price-content {max-width:520px;}
     .modal-close {
-      position:absolute;
-      top:15px;
-      right:15px;
-      font-size:22px;
-      cursor:pointer;
-      color:#fff;
-      z-index:10;
+      position:absolute;top:15px;right:15px;
+      font-size:22px;cursor:pointer;color:#fff;z-index:10;
     }
     .modal-row {display:flex;gap:16px;flex-wrap:wrap;}
     .modal-col {flex:1;min-width:250px;}
     .form-group {margin-bottom:14px;}
     .form-group label {display:block;margin-bottom:5px;color:#ccc;font-weight:bold;}
     .form-group input,.form-group select {
-      width:100%;
-      padding:9px;
-      border:1px solid #333;
-      border-radius:4px;
-      background:#000;
-      color:#fff;
+      width:100%;padding:9px;border:1px solid #333;border-radius:4px;background:#000;color:#fff;
     }
     .btn-modal {background:var(--light-green);color:#fff;padding:9px 20px;border:none;border-radius:4px;cursor:pointer;}
     .btn-delete {background:var(--danger);color:#fff;border:none;padding:9px 16px;border-radius:4px;cursor:pointer;margin-left:8px;display:none;}
     .photo-list {display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;}
-    .photo-thumb {width:70px;height:70px;object-fit:cover;border-radius:4px;border:1px solid #333;}
+    .photo-thumb {width:70px;height:70;object-fit:cover;border-radius:4px;border:1px solid #333;}
     .photo-thumb-wrap {position:relative;}
     .photo-thumb-wrap .del {
       position:absolute;top:-6px;right:-6px;
@@ -270,7 +207,7 @@
       display:none;
       position:fixed;
       inset:0;
-      background:rgba(0,0,0,0.95);
+      background:rgba(0,0,0.95);
       z-index:2000;
       align-items:center;
       justify-content:center;
@@ -285,6 +222,7 @@
     .avatar {width:120px;height:120px;border-radius:50%;object-fit:cover;background:#222;display:block;margin:0 auto 15px;border:2px solid var(--light-green);}
     table {width:100%;border-collapse:collapse;}
     th, td {padding:10px;text-align:left;border-bottom:1px solid #333;color:#fff;}
+
     #loginPage {
       position:fixed;inset:0;background:var(--bg-dark);
       display:flex;justify-content:center;align-items:center;z-index:9999;
@@ -295,9 +233,9 @@
     .login-card h2 {text-align:center;margin-bottom:20px;color:var(--light-green);}
     .login-btn {
       width:100%;background:var(--primary-green);color:#fff;
-      padding:10px;border:none;border-radius:4px;cursor:pointer;font-size:16px;margin-top:10px;
+      padding:10px;border:none;border-radius:4px;cursor:font-size:16px;margin-top:10px;
     }
-    .login-error {color:#ef4444;text-align:center;margin-bottom:15px;display:none;}
+    .login-error {color:var(--danger);text-align:center;margin-bottom:15px;display:none;}
   </style>
 </head>
 <body>
@@ -314,11 +252,11 @@
       <label>Password</label>
       <input type="password" id="loginPwd" placeholder="Password">
     </div>
-    <button class="login-btn" onclick="login()">Login</button>
+    <button class="login-btn" id="loginBtn">Login</button>
   </div>
 </div>
 
-<div class="container">
+<div class="container" style="display:none;" id="mainWrap">
   <header class="top-header">
     <h1 id="pageTitle">GT-XTREME BEARING Inventory System</h1>
     <button class="back-inv-btn" id="backInvBtn" onclick="switchToStock()">← Back Inventory</button>
@@ -333,37 +271,37 @@
       <button class="add-price-btn" id="addPriceBtn">+</button>
     </div>
     <div style="display:flex;align-items:center;gap:10px;">
-      <div class="user-info" id="userInfoBar" style="display:none;">
+      <div class="user-info" id="userInfoBar">
         <img id="topAvatar" class="user-avatar-small" src="">
         <span id="welcomeText">Welcome</span>
       </div>
       <div class="menu" id="menuWrapper">
-        <button class="nav-button active" data-target="stock" onclick="switchPage('stock')">Inventory</button>
+        <button class="nav-button" onclick="switchPage('stock')">Inventory</button>
         <button class="nav-button" onclick="switchPage('price')">Price List</button>
-        <button class="nav-button" data-target="category">Categories</button>
-        <button class="nav-button" data-target="user" id="userMenuBtn">Users</button>
-        <button class="nav-button" data-target="profile">Profile</button>
-        <button class="sync-refresh" id="refreshCloud">Refresh Cloud</button>
+        <button class="nav-button" onclick="switchPage('category')">Categories</button>
+        <button class="nav-button" onclick="switchPage('user')" id="userMenuBtn">Users</button>
+        <button class="nav-button" onclick="switchPage('profile')">Profile</button>
+        <button class="sync-refresh" id="refreshCloud">Refresh All Data</button>
       </div>
-      <button class="logout-btn" id="logoutBtn" style="display:none" onclick="logout()">Log Out</button>
+      <button class="logout-btn" id="logoutBtn" onclick="logout()">Log Out</button>
     </div>
   </div>
 
-  <!-- 库存页面 -->
   <div class="module active" id="stock">
     <div class="grid-container" id="stockGrid"></div>
   </div>
 
-  <!-- 价格列表页面（同页面隐藏显示，无需跳转） -->
   <div class="module" id="priceList">
     <div class="grid-container" id="priceGrid"></div>
-    <div class="empty-tip" id="priceEmptyTip" style="display:none;">No matching PID data found</div>
+    <div class="empty-tip" id="priceEmptyTip">No matching PID data found</div>
   </div>
 
   <div class="module" id="category">
     <table>
-      <thead><tr><th>Category Name</th><th>Action</th></tr></thead>
-      <tbody id="categoryTableBody"></tbody>
+      <thead>
+        <tr><th>Category Name</th><th>Action</th></tr>
+      </thead>
+      <tbody id="categoryBody"></tbody>
     </table>
   </div>
 
@@ -372,8 +310,10 @@
       <button class="btn-modal" id="addUserBtn">Add New User</button>
     </div>
     <table>
-      <thead><tr><th>Username</th><th>Role</th><th>Action</th></tr></thead>
-      <tbody id="userTableBody"></tbody>
+      <thead>
+        <tr><th>Username</th><th>Role</th><th>Action</th></tr>
+      </thead>
+      <tbody id="userBody"></tbody>
     </table>
   </div>
 
@@ -384,30 +324,34 @@
       <button class="btn-modal" onclick="avatarUpload.click()">Change Avatar</button>
       <input type="file" id="avatarUpload" accept="image/*" style="display:none;">
     </div>
-    <div class="form-group"><label>Name</label><input type="text" id="profileName"></div>
-    <div class="form-group"><label>New Password</label><input type="password" id="profilePwd"></div>
-    <button class="btn-modal" onclick="saveProfile()">Save Changes</button>
+    <div class="form-group">
+      <label>Display Name</label>
+      <input type="text" id="profileName">
+    </div>
+    <div class="form-group">
+      <label>New Password (leave blank to keep old)</label>
+      <input type="password" id="profilePwd">
+    </div>
+    <button class="btn-modal" onclick="saveProfile()">Save Profile</button>
   </div>
 </div>
 
-<!-- 分类弹窗 -->
 <div class="modal" id="categoryModal">
   <div class="modal-content">
-    <span class="modal-close">&times;</span>
-    <h2>Category</h2>
+    <span class="modal-close" onclick="closeAllModal()">&times;</span>
+    <h2>Edit Category</h2>
     <div class="form-group">
-      <label>Name</label>
+      <label>Category Name</label>
       <input type="text" id="categoryName">
     </div>
     <button class="btn-modal" id="saveCategoryBtn">Save</button>
   </div>
 </div>
 
-<!-- 用户弹窗 -->
 <div class="modal" id="userModal">
   <div class="modal-content">
-    <span class="modal-close">&times;</span>
-    <h2>User</h2>
+    <span class="modal-close" onclick="closeAllModal()">&times;</span>
+    <h2>User Management</h2>
     <div class="form-group">
       <label>Username</label>
       <input type="text" id="userName">
@@ -419,56 +363,54 @@
     <div class="form-group">
       <label>Role</label>
       <select id="userRole">
-        <option value="user">User</option>
+        <option value="user">Normal User</option>
         <option value="admin">Admin</option>
       </select>
     </div>
-    <button class="btn-modal" id="saveUserBtn">Save</button>
+    <button class="btn-modal" id="saveUserBtn">Save User</button>
   </div>
 </div>
 
-<!-- 库存新增/编辑弹窗 -->
 <div class="modal" id="stockModal">
   <div class="modal-content">
-    <span class="modal-close">&times;</span>
-    <h2 id="stockModalTitle">Add Item</h2>
+    <span class="modal-close" onclick="closeAllModal()">&times;</span>
+    <h2 id="stockModalTitle">Add New Item</h2>
     <div class="modal-row">
       <div class="modal-col">
         <div class="form-group"><label>SKU</label><input id="goodId"></div>
         <div class="form-group"><label>Name</label><input id="goodName"></div>
         <div class="form-group"><label>Category</label><select id="goodCategory"></select></div>
         <div class="form-group"><label>Size</label><input id="goodSize"></div>
-        <div class="form-group"><label>Qty</label><input type="number" id="goodStock" min="0"></div>
-        <div class="form-group"><label>1BOX = ? PCS</label><input type="number" id="goodBoxPcs" min="0" placeholder="PCS"></div>
+        <div class="form-group"><label>Stock Qty</label><input type="number" id="goodStock" min="0"></div>
+        <div class="form-group"><label>1 Box PCS</label><input type="number" id="goodBoxPcs" min="0"></div>
       </div>
       <div class="modal-col">
-        <div class="form-group"><label>Cost</label><input type="number" id="goodCost" step="0.01"></div>
-        <div class="form-group"><label>Group</label><input type="number" id="goodGroup" step="0.01"></div>
-        <div class="form-group"><label>Sell</label><input type="number" id="goodSell" step="0.01"></div>
-        <div class="form-group"><label>Cash</label><input type="number" id="goodCash" step="0.01"></div>
+        <div class="form-group"><label>Cost Price</label><input type="number" step="0.01" id="goodCost"></div>
+        <div class="form-group"><label>Group Price</label><input type="number" step="0.01" id="goodGroup"></div>
+        <div class="form-group"><label>Sell Price</label><input type="number" step="0.01" id="goodSell"></div>
+        <div class="form-group"><label>Cash Price</label><input type="number" step="0.01" id="goodCash"></div>
         <div class="form-group">
-          <label>Photos</label>
+          <label>Product Images</label>
           <div class="photo-list" id="photoList"></div>
           <input type="file" id="photoUpload" accept="image/*" style="display:none;">
         </div>
       </div>
     </div>
-    <button class="btn-modal" id="saveStockBtn">Save</button>
-    <button class="btn-delete" id="deleteInModalBtn" style="display:none">Delete</button>
+    <button class="btn-modal" id="saveStockBtn">Save Item</button>
+    <button class="btn-delete" id="deleteStockBtn">Delete This Item</button>
   </div>
 </div>
 
-<!-- 价格列表弹窗 -->
 <div class="modal" id="priceModal">
   <div class="modal-content modal-price-content">
-    <span class="modal-close">&times;</span>
-    <h2 id="priceModalTitle">Add New Price Matrix</h2>
+    <span class="modal-close" onclick="closeAllModal()">&times;</span>
+    <h2 id="priceModalTitle">Add Price Matrix</h2>
     <div class="form-group">
       <label>PID</label>
       <input type="text" id="inputPid">
     </div>
     <div class="form-group">
-      <label>LIST PRICE</label>
+      <label>List Price</label>
       <input type="number" step="0.01" id="inputListPrice">
     </div>
     <div class="form-group">
@@ -488,25 +430,28 @@
       <input type="number" step="0.01" id="input65">
     </div>
     <div style="margin-top:20px;">
-      <button class="btn-modal" id="savePriceBtn">Save Data</button>
-      <button class="btn-delete" id="deletePriceBtn">Delete This PID</button>
+      <button class="btn-modal" id="savePriceBtn">Save Price</button>
+      <button class="btn-delete" id="deletePriceBtn">Delete PID</button>
     </div>
   </div>
 </div>
 
-<!-- 图片放大弹窗 -->
-<div class="lightbox" id="lightbox">
-  <span class="lightbox-close">&times;</span>
-  <img id="lightboxImg">
-  <div class="lightbox-thumbs" id="lightboxThumbs"></div>
+<div class="lightbox" id="lightboxWrap">
+  <span class="lightbox-close" onclick="closeLightBox()">&times;</span>
+  <img id="lightImg">
+  <div class="lightbox-thumbs" id="thumbWrap"></div>
 </div>
 
 <script>
+// 自动清除旧缓存，解决登录卡住
+localStorage.removeItem("stock_sync_data");
+localStorage.removeItem("price_list_sync");
+// 你提供的API地址已完整填入
 const API_URL = "https://script.google.com/macros/s/AKfycbxRfRfE5Fz7faElXukupovMZHwNiSJ2c2MOpKsBlegHdM6MYi4s6oNEuYyp69PjX4ZjOA/exec";
 const SYNC_KEY = "stock_sync_data";
 const PRICE_CACHE_KEY = "price_list_sync";
 
-// 库存全局数据
+// 全局基础数据
 let localData = {
   stock: [],
   category: ["BEARING","OIL SEALS","BALL BEARING","HUB BEARING","CLUTCH BEARING","TAPERED BEARING","PILLOW BLOCK","FRONT KIT","REAR KIT","GREASE&LUBRICANT"],
@@ -516,7 +461,6 @@ let localData = {
     { username: "gtx", pwd: "123", role: "user", name: "GTX", avatar: "" }
   ]
 };
-// 价格列表全局数据
 let priceData = [];
 
 let currentEditId = null, tempPhotos = [], lightboxPhotos = [];
@@ -525,20 +469,17 @@ let currentUser = null;
 let isSyncing = false;
 let stockDebounce = null, priceDebounce = null;
 
-// 页面切换核心函数（APK无跳转，仅切换区块显示）
+// 页面切换（无新开窗口，APK完全兼容）
 function switchPage(type) {
-  // 清除所有active导航
-  document.querySelectorAll(".nav-button").forEach(btn=>btn.classList.remove("active"));
-  // 隐藏所有模块
-  document.querySelectorAll(".module").forEach(m=>m.style.display="none");
-  // 切换顶部标题、搜索框、返回按钮
+  document.querySelectorAll(".nav-button").forEach(b => b.classList.remove("active"));
+  document.querySelectorAll(".module").forEach(m => m.style.display = "none");
   const titleEl = document.getElementById("pageTitle");
   const stockSearchWrap = document.getElementById("stockSearchWrap");
   const priceSearchWrap = document.getElementById("priceSearchWrap");
   const backBtn = document.getElementById("backInvBtn");
 
   if(type === "stock") {
-    document.querySelector('[data-target="stock"]').classList.add("active");
+    document.querySelectorAll(".nav-button")[0].classList.add("active");
     document.getElementById("stock").style.display = "block";
     titleEl.innerText = "GT-XTREME BEARING Inventory System";
     stockSearchWrap.style.display = "block";
@@ -547,76 +488,82 @@ function switchPage(type) {
   } else if(type === "price") {
     document.querySelectorAll(".nav-button")[1].classList.add("active");
     document.getElementById("priceList").style.display = "block";
-    titleEl.innerText = "GT-XTREME Price List (Discount Matrix)";
+    titleEl.innerText = "Price List Discount Matrix";
     stockSearchWrap.style.display = "none";
     priceSearchWrap.style.display = "block";
     backBtn.style.display = "block";
-    // 切换自动刷新价目数据
     fetchPriceSheet();
   } else {
-    // 分类/用户/个人资料原有逻辑
-    document.querySelector(`[data-target="${type}"]`).classList.add("active");
+    document.querySelector(`.nav-button[onclick="switchPage('${type}')"]`).classList.add("active");
     document.getElementById(type).style.display = "block";
     stockSearchWrap.style.display = "block";
     priceSearchWrap.style.display = "none";
     backBtn.style.display = "none";
   }
 }
-// 快捷切回库存
-function switchToStock() {
-  switchPage("stock");
+function switchToStock(){switchPage("stock");}
+
+// 登录绑定修复（点击+回车都有效）
+const loginBtn = document.getElementById("loginBtn");
+loginBtn.addEventListener("click", login);
+document.getElementById("loginPwd").addEventListener("keydown", function(e){
+  if(e.key === "Enter") login();
+});
+document.getElementById("loginUsername").addEventListener("keydown", function(e){
+  if(e.key === "Enter") login();
+});
+
+function login() {
+  const un = document.getElementById("loginUsername").value.trim();
+  const pw = document.getElementById("loginPwd").value.trim();
+  const errBox = document.getElementById("loginError");
+  const userMatch = localData.users.find(u => u.username === un && u.pwd === pw);
+  if(!userMatch) {
+    errBox.style.display = "block";
+    return;
+  }
+  errBox.style.display = "none";
+  currentUser = userMatch;
+  document.getElementById("loginPage").style.display = "none";
+  document.getElementById("mainWrap").style.display = "block";
+  document.getElementById("welcomeText").innerText = "Welcome, " + currentUser.name;
+  if(currentUser.avatar) document.getElementById("topAvatar").src = currentUser.avatar;
+  if(currentUser.role !== "admin") document.getElementById("userMenuBtn").style.display = "none";
+  loadLocalCache();
+  fetchCloudData();
+  fetchPriceSheet();
+  startSyncLoop();
 }
 
-// ========== 登录、用户、库存原有全套逻辑不变 ==========
-function login() {
-  const username = document.getElementById("loginUsername").value.trim();
-  const pwd = document.getElementById("loginPwd").value.trim();
-  const user = localData.users.find(u => u.username === username && u.pwd === pwd);
-  if (user) {
-    currentUser = user;
-    document.getElementById("loginPage").style.display = "none";
-    document.getElementById("logoutBtn").style.display = "inline-block";
-    document.getElementById("userInfoBar").style.display = "flex";
-    if(user.role !== "admin") document.getElementById("userMenuBtn").style.display = "none";
-    loadLocalCache();
-    fetchCloudData();
-    fetchPriceSheet();
-    startSyncLoop();
-  } else {
-    document.getElementById("loginError").style.display = "block";
-  }
-}
-document.getElementById("loginPwd").addEventListener("keydown", e=>e.key==="Enter"&&login());
-document.getElementById("loginUsername").addEventListener("keydown", e=>e.key==="Enter"&&login());
-function updateUserBar(){
-  if(!currentUser) return;
-  document.getElementById("topAvatar").src = currentUser.avatar || "";
-  document.getElementById("welcomeText").textContent = "Welcome, " + (currentUser.name || currentUser.username);
-}
 function logout() {
   currentUser = null;
   document.getElementById("loginPage").style.display = "flex";
-  document.getElementById("logoutBtn").style.display = "none";
-  document.getElementById("userInfoBar").style.display = "none";
+  document.getElementById("mainWrap").style.display = "none";
+  document.getElementById("loginUsername").value = "";
+  document.getElementById("loginPwd").value = "";
 }
+
+// CSV解析通用
 function parseCSV(csvText){
   try {
-    const lines = csvText.trim().split("\n").filter(x=>x);
-    if(lines.length<2) return [];
-    const h = lines[0].split(",");
+    const lines = csvText.trim().split("\n").filter(r=>r);
+    if(lines.length < 2) return [];
+    const header = lines[0].split(",");
     return lines.slice(1).map(row=>{
-      const r = row.split(",");
-      const o = {};
-      h.forEach((k,i)=>{
-        let v = r[i]||"";
-        if(["stock","boxPcs","cost","group","sell","cash"].includes(k)) o[k] = parseFloat(v)||0;
-        else if(k==="photos") o[k] = v.split("|").filter(s=>s.trim()).slice(0,3);
-        else o[k] = v.trim();
+      const cols = row.split(",");
+      const obj = {};
+      header.forEach((k,i)=>{
+        let v = cols[i] || "";
+        if(["stock","boxPcs","cost","group","sell","cash"].includes(k)) obj[k] = Number(v) || 0;
+        else if(k === "photos") obj[k] = v.split("|").filter(s=>s.trim());
+        else obj[k] = v;
       });
-      return o;
+      return obj;
     });
-  } catch (e) { return []; }
+  } catch(e){return [];}
 }
+
+// 读取库存表
 async function fetchCloudData(){
   if(isSyncing) return;
   isSyncing = true;
@@ -626,9 +573,7 @@ async function fetchCloudData(){
     localData.stock = parseCSV(csv);
     saveLocalCache();
     renderStock();
-  } catch (e) {
-    console.log("Stock fetch error:",e);
-  }
+  } catch(e){console.log("Stock fetch fail",e);}
   isSyncing = false;
 }
 async function syncToSheet(){
@@ -636,377 +581,374 @@ async function syncToSheet(){
   isSyncing = true;
   try {
     await fetch(API_URL, {
-      method: "POST",
-      body: JSON.stringify({ action: "updateAll", list: localData.stock })
+      method:"POST",
+      body: JSON.stringify({action:"updateAll", list:localData.stock})
     });
-  } catch (e) {
-    console.log("Stock sync error:",e);
-  }
+  }catch(e){console.log("Stock sync fail",e);}
   isSyncing = false;
 }
 function startSyncLoop(){
-  async function loop(){
+  setInterval(async()=>{
     await fetchCloudData();
     await fetchPriceSheet();
-    setTimeout(loop, 300000);
-  }
-  loop();
+  }, 300000);
 }
 function saveLocalCache(){
-  try {
-    const d = JSON.parse(JSON.stringify(localData));
-    d.stock = d.stock.map(i => {if(i.photos) i.photos = i.photos.slice(0,3);return i;});
-    localStorage.setItem(SYNC_KEY, JSON.stringify(d));
-  } catch (e) { localStorage.removeItem(SYNC_KEY); }
+  const copy = JSON.parse(JSON.stringify(localData));
+  copy.stock = copy.stock.map(i=>{if(i.photos)i.photos=i.photos.slice(0,3);return i;});
+  localStorage.setItem(SYNC_KEY, JSON.stringify(copy));
 }
 function loadLocalCache(){
   const cache = localStorage.getItem(SYNC_KEY);
   if(cache) localData = JSON.parse(cache);
   renderAll();
-  if (currentUser) { loadProfile(); updateUserBar(); }
+  if(currentUser){loadProfile();}
 }
-document.querySelectorAll(".nav-button").forEach(btn=>{
-  if(!btn.onclick && btn.dataset.target){
-    btn.addEventListener("click",()=>{
-      switchPage(btn.dataset.target);
-    });
-  }
-});
-document.getElementById("refreshCloud").onclick = async()=>{
+document.getElementById("refreshCloud").addEventListener("click", async()=>{
   await fetchCloudData();
   await fetchPriceSheet();
   alert("Data refreshed");
-};
+});
 document.getElementById("stockSearch").addEventListener("input",()=>{
   clearTimeout(stockDebounce);
-  stockDebounce = setTimeout(renderStock, 300);
+  stockDebounce = setTimeout(renderStock,300);
 });
+
 function renderAll(){
   renderStock();
   renderCategory();
   renderUser();
 }
 function renderStock(){
-  const g = document.getElementById("stockGrid");
-  const kw = stockSearch.value.toLowerCase();
+  const grid = document.getElementById("stockGrid");
+  const kw = document.getElementById("stockSearch").value.toLowerCase();
   const list = localData.stock.filter(i=>
-    (i.name||"").toLowerCase().includes(kw)||
-    (i.id||"").toLowerCase().includes(kw)||
+    (i.name||"").toLowerCase().includes(kw) ||
+    (i.id||"").toLowerCase().includes(kw) ||
     (i.size||"").toLowerCase().includes(kw)
   );
-  const frag = document.createDocumentFragment();
-  g.innerHTML = "";
-  if(!list.length){
-    const noData = document.createElement("div");
-    noData.style.padding = "30px";
-    noData.style.textAlign = "center";
-    noData.textContent = "No data";
-    frag.appendChild(noData);
-  } else {
-    list.forEach(i=>{
-      const card = document.createElement("div");
-      card.className = "product-card";
-      card.innerHTML = `
-        <div class="card-img-wrap">${i.photos?.[0]?`<img class="card-img" src="${i.photos[0]}">`:"No Image"}</div>
-        <div class="card-info">
-          <div class="card-sku">${i.id||""}</div>
-          <div class="card-details">
-            ${i.name||""}<br>
-            Size: ${i.size||"-"}<br>
-            1BOX: ${i.boxPcs||0} PCS
-          </div>
-          <div class="card-price">
-            <div>
-              <div class="price-cost">Cost: ${Number(i.cost||0).toFixed(2)}</div>
-              <div class="price-group">Group: ${Number(i.group||0).toFixed(2)}</div>
-            </div>
-            <div>
-              <div class="price-sell">Sell: ${Number(i.sell||0).toFixed(2)}</div>
-              <div class="price-cash">Cash: ${Number(i.cash||0).toFixed(2)}</div>
-            </div>
-          </div>
-        </div>`;
-      card.querySelector(".card-img-wrap").onclick = (e) => {
-        e.stopPropagation();
-        openLightbox(i.photos || []);
-      };
-      card.onclick = () => editStock(i.id);
-      frag.appendChild(card);
-    });
+  grid.innerHTML = "";
+  if(list.length === 0){
+    grid.innerHTML = "<div style='padding:30px;text-align:center;'>No Data</div>";
+    return;
   }
-  g.appendChild(frag);
-}
-function openLightbox(photos) {
-  if (!photos || photos.length === 0) return;
-  lightboxPhotos = photos;
-  lightbox.style.display = "flex";
-  lightboxImg.src = photos[0];
-  const thumbs = lightboxThumbs;
-  thumbs.innerHTML = "";
-  photos.forEach((src, idx) => {
-    const thumb = document.createElement("img");
-    thumb.className = "lightbox-thumb";
-    thumb.src = src;
-    if (idx === 0) thumb.classList.add("active");
-    thumb.onclick = () => {
-      lightboxImg.src = src;
-      document.querySelectorAll(".lightbox-thumb").forEach(t => t.classList.remove("active"));
-      thumb.classList.add("active");
+  list.forEach(item=>{
+    const card = document.createElement("div");
+    card.className = "product-card";
+    let imgHtml = item.photos?.length ? `<img class="card-img" src="${item.photos[0]}">` : "No Image";
+    card.innerHTML = `
+      <div class="card-img-wrap" data-imgs='${JSON.stringify(item.photos)}'>${imgHtml}</div>
+      <div class="card-info">
+        <div class="card-sku">${item.id||""}</div>
+        <div class="card-details">${item.name||""}<br>Size: ${item.size||"-"}<br>1BOX: ${item.boxPcs||0} PCS</div>
+        <div class="card-price">
+          <div>
+            <div class="price-cost">Cost: ${Number(item.cost||0).toFixed(2)}</div>
+            <div class="price-group">Group: ${Number(item.group||0).toFixed(2)}</div>
+          </div>
+          <div>
+            <div class="price-sell">Sell: ${Number(item.sell||0).toFixed(2)}</div>
+            <div class="price-cash">Cash: ${Number(item.cost||0).toFixed(2)}</div>
+          </div>
+        </div>
+      </div>
+    `;
+    card.querySelector(".card-img-wrap").onclick = (e)=>{
+      e.stopPropagation();
+      openLight(JSON.parse(card.querySelector(".card-img-wrap").dataset.imgs));
     };
-    thumbs.appendChild(thumb);
+    card.onclick = ()=>editStock(item.id);
+    grid.appendChild(card);
   });
 }
-lightbox.querySelector(".lightbox-close").onclick = ()=>{
-  lightbox.style.display = "none";
-  lightboxImg.src = "";
-  lightboxThumbs.innerHTML = "";
-};
+function openLight(imgs){
+  if(!imgs || imgs.length === 0) return;
+  lightboxPhotos = imgs;
+  const wrap = document.getElementById("lightboxWrap");
+  const img = document.getElementById("lightImg");
+  const thumbWrap = document.getElementById("thumbWrap");
+  img.src = imgs[0];
+  thumbWrap.innerHTML = "";
+  imgs.forEach((src,idx)=>{
+    const t = document.createElement("img");
+    t.className = "lightbox-thumb";
+    if(idx===0) t.classList.add("active");
+    t.src = src;
+    t.onclick = ()=>{
+      img.src = src;
+      document.querySelectorAll(".lightbox-thumb").forEach(x=>x.classList.remove("active"));
+      t.classList.add("active");
+    };
+    thumbWrap.appendChild(t);
+  });
+  wrap.style.display = "flex";
+}
+function closeLightBox(){
+  document.getElementById("lightboxWrap").style.display = "none";
+}
 function renderCategory(){
-  const b=categoryTableBody;
-  const s=goodCategory;
-  b.innerHTML="";
-  s.innerHTML="";
-  localData.category.forEach(c=>{
-    b.innerHTML += `<tr><td>${c}</td><td>
-      <button onclick="editCategory('${c}')" class="btn-modal" style="padding:6px 10px;">Edit</button>
-      <button onclick="deleteCategory('${c}')" class="btn-delete" style="padding:6px 10px;">Del</button>
-    </td></tr>`;
-    s.innerHTML += `<option value="${c}">${c}</option>`;
+  const body = document.getElementById("categoryBody");
+  const sel = document.getElementById("goodCategory");
+  body.innerHTML = "";
+  sel.innerHTML = "";
+  localData.category.forEach(cat=>{
+    body.innerHTML += `<tr><td>${cat}</td><td><button class="btn-modal" onclick="editCat('${cat}')">Edit</button><button class="btn-delete" onclick="delCat('${cat}')">Delete</button></tr>`;
+    sel.innerHTML += `<option value="${cat}">${cat}</option>`;
   });
 }
 function renderUser(){
-  const b=userTableBody;
-  b.innerHTML="";
+  const body = document.getElementById("userBody");
+  body.innerHTML = "";
   localData.users.forEach(u=>{
-    b.innerHTML += `<tr><td>${u.username}</td><td>${u.role}</td><td>
-      <button onclick="editUser('${u.username}')" class="btn-modal" style="padding:6px 10px;">Edit</button>
-      <button onclick="deleteUser('${u.username}')" class="btn-delete" style="padding:6px 10px;">Del</button>
-    </td></tr>`;
+    body.innerHTML += `<tr><td>${u.username}</td><td>${u.role}</td><td><button class="btn-modal" onclick="editUser('${u.username}')">Edit</button><button class="btn-delete" onclick="delUser('${u.username}')">Delete</button></tr>`;
   });
 }
 function renderPhotoList(){
-  const list=photoList;
-  list.innerHTML="";
-  tempPhotos.slice(0,3).forEach((s,i)=>{
-    const item = document.createElement("div");
-    item.className = "photo-thumb-wrap";
-    item.innerHTML = `<img class="photo-thumb" src="${s}"><span class="del" data-index="${i}">×</span>`;
-    list.appendChild(item);
+  const wrap = document.getElementById("photoList");
+  wrap.innerHTML = "";
+  tempPhotos.slice(0,3).forEach((src,i)=>{
+    const div = document.createElement("div");
+    div.className = "photo-thumb-wrap";
+    div.innerHTML = `<img class="photo-thumb" src="${src}"><span class="del" data-i="${i}">×</span>`;
+    wrap.appendChild(div);
   });
-  if(tempPhotos.length<3) {
-    const addBtn = document.createElement("div");
-    addBtn.className = "photo-add-btn";
-    addBtn.innerText = "+";
-    addBtn.onclick = ()=>photoUpload.click();
-    list.appendChild(addBtn);
+  if(tempPhotos.length < 3){
+    const addDiv = document.createElement("div");
+    addDiv.className = "photo-add-btn";
+    addDiv.innerText = "+";
+    addDiv.onclick = ()=>document.getElementById("photoUpload").click();
+    wrap.appendChild(addDiv);
   }
-  document.querySelectorAll(".photo-thumb-wrap .del").forEach(el=>{
-    el.onclick = (e)=>{
+  document.querySelectorAll(".photo-thumb-wrap .del").forEach(d=>{
+    d.onclick = (e)=>{
       e.stopPropagation();
-      const idx = Number(el.dataset.index);
+      const idx = Number(d.dataset.i);
       tempPhotos.splice(idx,1);
       renderPhotoList();
-    }
+    };
   });
 }
-photoUpload.onchange = e=>{
-  const f = e.target.files[0];
-  if(!f || tempPhotos.length>=3) return;
-  const r = new FileReader();
-  r.onload = ev=>{
+document.getElementById("photoUpload").addEventListener("change", function(e){
+  const file = e.target.files[0];
+  if(!file || tempPhotos.length >=3) return;
+  const reader = new FileReader();
+  reader.onload = ev=>{
     tempPhotos.push(ev.target.result);
     renderPhotoList();
   };
-  r.readAsDataURL(f);
-};
-addStockBtn.onclick = ()=>{
-  currentEditId=null; tempPhotos=[];
-  document.querySelectorAll("#stockModal input").forEach(i=>i.value="");
-  goodStock.value=0; goodBoxPcs.value=0;
+  reader.readAsDataURL(file);
+  this.value = "";
+});
+document.getElementById("addStockBtn").addEventListener("click",()=>{
+  currentEditId = null;
+  tempPhotos = [];
+  document.querySelectorAll("#stockModal input").forEach(inp=>inp.value="");
+  document.getElementById("goodStock").value = 0;
+  document.getElementById("goodBoxPcs").value = 0;
+  document.getElementById("deleteStockBtn").style.display = "none";
+  document.getElementById("stockModalTitle").innerText = "Add New Item";
   renderPhotoList();
-  deleteInModalBtn.style.display="none";
-  stockModalTitle.innerText = "Add Item";
-  stockModal.style.display="flex";
-};
+  document.getElementById("stockModal").style.display = "flex";
+});
 function editStock(id){
-  const item = localData.stock.find(s=>s.id===id);
-  if(!item)return;
-  currentEditId=id; tempPhotos=[...(item.photos||[]).slice(0,3)];
-  goodId.value=item.id; goodName.value=item.name; goodCategory.value=item.category;
-  goodSize.value=item.size||""; goodStock.value=item.stock||0;
-  goodBoxPcs.value=item.boxPcs||0;
-  goodCost.value=item.cost||0; goodGroup.value=item.group||0;
-  goodSell.value=item.sell||0; goodCash.value=item.cash||0;
-  renderPhotoList(); deleteInModalBtn.style.display="inline-block";
-  stockModalTitle.innerText = "Edit Item";
-  stockModal.style.display="flex";
+  const item = localData.stock.find(x=>x.id === id);
+  if(!item) return;
+  currentEditId = id;
+  tempPhotos = [...(item.photos || [])];
+  document.getElementById("goodId").value = item.id;
+  document.getElementById("goodName").value = item.name;
+  document.getElementById("goodCategory").value = item.category;
+  document.getElementById("goodSize").value = item.size;
+  document.getElementById("goodStock").value = item.stock;
+  document.getElementById("goodBoxPcs").value = item.boxPcs;
+  document.getElementById("goodCost").value = item.cost;
+  document.getElementById("goodGroup").value = item.group;
+  document.getElementById("goodSell").value = item.sell;
+  document.getElementById("goodCash").value = item.cash;
+  document.getElementById("deleteStockBtn").style.display = "inline-block";
+  document.getElementById("stockModalTitle").innerText = "Edit Item";
+  renderPhotoList();
+  document.getElementById("stockModal").style.display = "flex";
 }
-saveStockBtn.onclick = async()=>{
-  const id = goodId.value.trim();
-  const name = goodName.value.trim();
-  if(!id||!name)return alert("SKU & Name required");
-  const goods = {
-    id,name,category:goodCategory.value,size:goodSize.value,
-    stock:Number(goodStock.value)||0,boxPcs:Number(goodBoxPcs.value)||0,
-    cost:Number(goodCost.value)||0,group:Number(goodGroup.value)||0,
-    sell:Number(goodSell.value)||0,cash:Number(goodCash.value)||0,
-    photos:tempPhotos.slice(0,3)
+document.getElementById("saveStockBtn").addEventListener("click", async()=>{
+  const id = document.getElementById("goodId").value.trim();
+  const name = document.getElementById("goodName").value.trim();
+  if(!id || !name){alert("SKU & Name cannot empty");return;}
+  const obj = {
+    id,
+    name,
+    category: document.getElementById("goodCategory").value,
+    size: document.getElementById("goodSize").value,
+    stock: Number(document.getElementById("goodStock").value) || 0,
+    boxPcs: Number(document.getElementById("goodBoxPcs").value) || 0,
+    cost: Number(document.getElementById("goodCost").value) || 0,
+    group: Number(document.getElementById("goodGroup").value) || 0,
+    sell: Number(document.getElementById("goodSell").value) || 0,
+    cash: Number(document.getElementById("goodCash").value) || 0,
+    photos: tempPhotos.slice(0,3)
   };
   if(currentEditId){
-    const idx = localData.stock.findIndex(s=>s.id===currentEditId);
-    if(idx>-1) localData.stock[idx]=goods;
+    const idx = localData.stock.findIndex(x=>x.id === currentEditId);
+    if(idx > -1) localData.stock[idx] = obj;
   }else{
-    if(localData.stock.some(s=>s.id===id))return alert("SKU exists");
-    localData.stock.push(goods);
+    if(localData.stock.some(x=>x.id === id)){alert("SKU already exists");return;}
+    localData.stock.push(obj);
   }
   await syncToSheet();
   saveLocalCache();
   renderStock();
-  stockModal.style.display="none";
-  alert("Saved");
-};
-deleteInModalBtn.onclick = async()=>{
-  if(!confirm("Delete this item?"))return;
-  localData.stock = localData.stock.filter(s=>s.id!==currentEditId);
+  document.getElementById("stockModal").style.display = "none";
+  alert("Saved OK");
+});
+document.getElementById("deleteStockBtn").addEventListener("click", async()=>{
+  if(!confirm("Delete this item permanently?")) return;
+  localData.stock = localData.stock.filter(x=>x.id !== currentEditId);
   await syncToSheet();
   saveLocalCache();
   renderStock();
-  stockModal.style.display="none";
+  document.getElementById("stockModal").style.display = "none";
   alert("Deleted");
-};
-function editCategory(o){
-  currentEditId=o;
-  categoryName.value=o;
-  categoryModal.style.display="flex";
+});
+function editCat(name){
+  currentEditId = name;
+  document.getElementById("categoryName").value = name;
+  document.getElementById("categoryModal").style.display = "flex";
 }
-function deleteCategory(c){
-  if(!confirm("Delete category?"))return;
-  localData.category=localData.category.filter(x=>x!==c);
+function delCat(name){
+  if(!confirm("Delete category?")) return;
+  localData.category = localData.category.filter(c=>c !== name);
   saveLocalCache();
   renderCategory();
 }
-saveCategoryBtn.onclick = ()=>{
-  const n = categoryName.value.trim();
-  if(!n)return alert("Name empty");
-  if(currentEditId) localData.category = localData.category.map(x=>x===currentEditId?n:x);
-  else if(!localData.category.includes(n)) localData.category.push(n);
+document.getElementById("saveCategoryBtn").addEventListener("click",()=>{
+  const val = document.getElementById("categoryName").value.trim();
+  if(!val){alert("Name empty");return;}
+  if(currentEditId){
+    localData.category = localData.category.map(c=>c === currentEditId ? val : c);
+  }else{
+    if(localData.category.includes(val)){alert("Category exists");return;}
+    localData.category.push(val);
+  }
   saveLocalCache();
   renderCategory();
-  categoryModal.style.display="none";
-};
-addUserBtn.onclick = ()=>{
-  currentEditId=null;
-  userName.value=""; userPwd.value=""; userRole.value="user";
-  userModal.style.display="flex";
-};
-function editUser(u){
-  const us=localData.users.find(x=>x.username===u);
-  if(!us)return;
-  currentEditId=u;
-  userName.value=us.username; userPwd.value=us.pwd; userRole.value=us.role;
-  userModal.style.display="flex";
+  document.getElementById("categoryModal").style.display = "none";
+});
+document.getElementById("addUserBtn").addEventListener("click",()=>{
+  currentEditId = null;
+  document.getElementById("userName").value = "";
+  document.getElementById("userPwd").value = "";
+  document.getElementById("userRole").value = "user";
+  document.getElementById("userModal").style.display = "flex";
+});
+function editUser(un){
+  const u = localData.users.find(x=>x.username === un);
+  if(!u) return;
+  currentEditId = un;
+  document.getElementById("userName").value = u.username;
+  document.getElementById("userPwd").value = u.pwd;
+  document.getElementById("userRole").value = u.role;
+  document.getElementById("userModal").style.display = "flex";
 }
-function deleteUser(u){
-  if(u==="admin")return alert("Cannot delete admin");
-  if(!confirm("Delete user?"))return;
-  localData.users=localData.users.filter(x=>x.username!==u);
+function delUser(un){
+  if(un === "admin"){alert("Cannot delete admin");return;}
+  if(!confirm("Delete user?")) return;
+  localData.users = localData.users.filter(x=>x.username !== un);
   saveLocalCache();
   renderUser();
 }
-saveUserBtn.onclick = ()=>{
-  const un = userName.value.trim();
-  const pw = userPwd.value.trim();
-  if(!un||!pw)return alert("Username & Password required");
-  const userObj = {username:un,pwd:pw,role:userRole.value,name:un,avatar:""};
+document.getElementById("saveUserBtn").addEventListener("click",()=>{
+  const un = document.getElementById("userName").value.trim();
+  const pw = document.getElementById("userPwd").value.trim();
+  const role = document.getElementById("userRole").value;
+  if(!un || !pw){alert("Username & Password required");return;}
+  const userObj = {username:un,pwd:pw,role:role,name:un,avatar:""};
   if(currentEditId){
-    const i = localData.users.findIndex(x=>x.username===currentEditId);
-    if(i>-1) localData.users[i]=userObj;
-  }else if(!localData.users.some(x=>x.username===un)){
+    const idx = localData.users.findIndex(x=>x.username === currentEditId);
+    if(idx > -1) localData.users[idx] = userObj;
+  }else{
+    if(localData.users.some(x=>x.username === un)){alert("User exists");return;}
     localData.users.push(userObj);
   }
   saveLocalCache();
   renderUser();
-  userModal.style.display="none";
-};
+  document.getElementById("userModal").style.display = "none";
+});
 function loadProfile(){
-  if (!currentUser) return;
-  profileName.value = currentUser.name || currentUser.username;
-  avatarImg.src = currentUser.avatar || "";
+  if(!currentUser) return;
+  document.getElementById("profileName").value = currentUser.name;
+  document.getElementById("avatarImg").src = currentUser.avatar || "";
 }
 function saveProfile(){
-  if (!currentUser) return;
-  currentUser.name = profileName.value.trim();
-  if(profilePwd.value.trim()) currentUser.pwd = profilePwd.value.trim();
+  if(!currentUser) return;
+  const newName = document.getElementById("profileName").value.trim();
+  const newPwd = document.getElementById("profilePwd").value.trim();
+  currentUser.name = newName;
+  if(newPwd){
+    const idx = localData.users.findIndex(u=>u.username === currentUser.username);
+    if(idx > -1) localData.users[idx] = currentUser;
+    currentUser.pwd = newPwd;
+  }
+  const avatarImg = document.getElementById("avatarImg").src;
+  currentUser.avatar = avatarImg;
   const idx = localData.users.findIndex(u => u.username === currentUser.username);
   if (idx > -1) localData.users[idx] = currentUser;
   saveLocalCache();
-  updateUserBar();
+  document.getElementById("welcomeText").innerText = "Welcome, " + currentUser.name;
   alert("Profile saved");
 }
-avatarUpload.onchange = e=>{
-  const f=e.target.files[0]; if(!f)return;
-  const r=new FileReader();
-  r.onload=ev=>{
-    if (currentUser) {
-      currentUser.avatar = ev.target.result;
-      avatarImg.src = ev.target.result;
-      const idx = localData.users.findIndex(u => u.username === currentUser.username);
-      if (idx > -1) localData.users[idx] = currentUser;
-      saveLocalCache();
-      updateUserBar();
-    }
+document.getElementById("avatarUpload").addEventListener("change", function(e){
+  const f = e.target.files[0];
+  if(!f) return;
+  const r = new FileReader();
+  r.onload = ev=>{
+    document.getElementById("avatarImg").src = ev.target.result;
   };
   r.readAsDataURL(f);
-};
-document.querySelectorAll(".modal-close").forEach(x=>{
-  x.onclick=()=>{
-    document.querySelectorAll(".modal").forEach(m=>m.style.display="none");
-  }
+  this.value = "";
 });
+function closeAllModal(){
+  document.querySelectorAll(".modal").forEach(m=>m.style.display = "none");
+}
+document.querySelectorAll(".modal-close").forEach(x=>x.onclick = closeAllModal);
 
-// ========== 价格列表全新逻辑（同页面，独立读取PriceList工作表） ==========
-const PRICE_CACHE_KEY = "price_list_sync";
+// ========= Price List 独立接口逻辑 =========
 async function fetchPriceSheet(){
   if(isSyncing) return;
   isSyncing = true;
   try {
     const res = await fetch(API_URL + "?type=price");
-    const csvText = await res.text();
-    priceData = parsePriceCSV(csvText);
+    const txt = await res.text();
+    priceData = parsePriceCSV(txt);
     saveLocalPriceCache();
     renderPriceCard();
-  }catch(e){
-    console.log("Price sheet fetch error",e);
-  }
+  }catch(e){console.log("Price fetch error",e);}
   isSyncing = false;
 }
 function saveLocalPriceCache(){
   localStorage.setItem(PRICE_CACHE_KEY, JSON.stringify(priceData));
 }
 function loadLocalPriceCache(){
-  const cache = localStorage.getItem(PRICE_CACHE_KEY);
-  if(cache) priceData = JSON.parse(cache);
+  const c = localStorage.getItem(PRICE_CACHE_KEY);
+  if(c) priceData = JSON.parse(c);
   renderPriceCard();
 }
-function parsePriceCSV(csv){
+function parsePriceCSV(txt){
   try{
-    const lines = csv.trim().split("\n").filter(s=>s);
+    const lines = txt.trim().split("\n").filter(s=>s);
     if(lines.length < 2) return [];
     const header = lines[0].split(",");
     return lines.slice(1).map(row=>{
       const arr = row.split(",");
       return {
-        pid: arr[0]?.trim() || "",
+        pid: arr[0] || "",
         listPrice: Number(arr[1]) || 0,
         d72: Number(arr[2]) || 0,
         d70: Number(arr[3]) || 0,
         d68: Number(arr[4]) || 0,
         d65: Number(arr[5]) || 0
-      }
-    })
-  }catch(err){
-    return [];
-  }
+      };
+    });
+  }catch(err){return [];}
 }
 async function syncPriceToSheet(){
   if(isSyncing) return;
@@ -1014,79 +956,56 @@ async function syncPriceToSheet(){
   try{
     await fetch(API_URL, {
       method:"POST",
-      body: JSON.stringify({
-        action: "updatePriceList",
-        priceList: priceData
-      })
-    })
-  }catch(e){
-    console.log("Sync price error",e);
-  }
+      body: JSON.stringify({action:"updatePriceList", priceList:priceData})
+    });
+  }catch(e){console.log("Price sync fail",e);}
   isSyncing = false;
 }
 function renderPriceCard(){
-  const gridWrap = document.getElementById("priceGrid");
+  const grid = document.getElementById("priceGrid");
   const emptyTip = document.getElementById("priceEmptyTip");
-  const searchWord = document.getElementById("pidSearch").value.trim().toLowerCase();
-  const filterList = priceData.filter(item=> item.pid.toLowerCase().includes(searchWord));
-  gridWrap.innerHTML = "";
-  if(filterList.length === 0){
+  const kw = document.getElementById("pidSearch").value.toLowerCase();
+  const filter = priceData.filter(item=> item.pid.toLowerCase().includes(kw));
+  grid.innerHTML = "";
+  if(filter.length === 0){
     emptyTip.style.display = "block";
     return;
   }
   emptyTip.style.display = "none";
-  const fragment = document.createDocumentFragment();
-  filterList.forEach(item=>{
+  filter.forEach(item=>{
     const card = document.createElement("div");
     card.className = "price-card";
-    card.dataset.pid = item.pid;
     card.innerHTML = `
       <div class="card-head">
         <span class="card-pid">PID: ${item.pid}</span>
-        <span class="card-list-price">LIST PRICE: ${item.listPrice.toFixed(2)}</span>
+        <span class="card-list-price">LIST PRICE: ${Number(item.listPrice).toFixed(2)}</span>
       </div>
       <div class="discount-row">
-        <div class="discount-cell dis-72">
-          <div class="dis-label">-72%</div>
-          <div class="dis-value">${item.d72.toFixed(2)}</div>
-        </div>
-        <div class="discount-cell dis-70">
-          <div class="dis-label">-70%</div>
-          <div class="dis-value">${item.d70.toFixed(2)}</div>
-        </div>
-        <div class="discount-cell dis-68">
-          <div class="dis-label">-68%</div>
-          <div class="dis-value">${item.d68.toFixed(2)}</div>
-        </div>
-        <div class="discount-cell dis-65">
-          <div class="dis-label">-65%</div>
-          <div class="dis-value">${item.d65.toFixed(2)}</div>
-        </div>
+        <div class="discount-cell dis-72"><div class="dis-label">-72%</div><div class="dis-value">${Number(item.d72).toFixed(2)}</div></div>
+        <div class="discount-cell dis-70"><div class="dis-label">-70%</div><div class="dis-value">${Number(item.d70).toFixed(2)}</div></div>
+        <div class="discount-cell dis-68"><div class="dis-label">-68%</div><div class="dis-value">${Number(item.d68).toFixed(2)}</div></div>
+        <div class="discount-cell dis-65"><div class="dis-label">-65%</div><div class="dis-value">${Number(item.d65).toFixed(2)}</div></div>
       </div>
     `;
-    card.onclick = ()=> openEditPriceModal(item.pid);
-    fragment.appendChild(card);
-  })
-  gridWrap.appendChild(fragment);
+    card.onclick = ()=> openEditPrice(item.pid);
+    grid.appendChild(card);
+  });
 }
 document.getElementById("pidSearch").addEventListener("input",()=>{
   clearTimeout(priceDebounce);
   priceDebounce = setTimeout(renderPriceCard, 300);
-})
-document.getElementById("addPriceBtn").onclick = ()=>{
+});
+document.getElementById("addPriceBtn").addEventListener("click",()=>{
   currentEditPid = null;
-  document.getElementById("priceModalTitle").textContent = "Add New Price Matrix";
-  ["inputPid","inputListPrice","input72","input70","input68","input65"].forEach(id=>{
-    document.getElementById(id).value = "";
-  })
+  ["inputPid","inputListPrice","input72","input70","input68","input65"].forEach(id=>document.getElementById(id).value = "");
   document.getElementById("deletePriceBtn").style.display = "none";
-  priceModal.style.display = "flex";
-}
-function openEditPriceModal(pid){
+  document.getElementById("priceModalTitle").innerText = "Add New Price Matrix";
+  document.getElementById("priceModal").style.display = "flex";
+});
+function openEditPrice(pid){
   const target = priceData.find(x=>x.pid === pid);
   if(!target) return;
   currentEditPid = pid;
-  document.getElementById("priceModalTitle").textContent = "Edit Price Matrix";
   document.getElementById("inputPid").value = target.pid;
   document.getElementById("inputListPrice").value = target.listPrice;
   document.getElementById("input72").value = target.d72;
@@ -1094,47 +1013,47 @@ function openEditPriceModal(pid){
   document.getElementById("input68").value = target.d68;
   document.getElementById("input65").value = target.d65;
   document.getElementById("deletePriceBtn").style.display = "inline-block";
-  priceModal.style.display = "flex";
+  document.getElementById("priceModalTitle").innerText = "Edit Price Matrix";
+  document.getElementById("priceModal").style.display = "flex";
 }
-document.getElementById("savePriceBtn").onclick = async()=>{
+document.getElementById("savePriceBtn").addEventListener("click", async()=>{
   const pid = document.getElementById("inputPid").value.trim();
-  const listPrice = Number(document.getElementById("inputListPrice").value);
-  const d72 = Number(document.getElementById("input72").value);
-  const d70 = Number(document.getElementById("input70").value);
-  const d68 = Number(document.getElementById("input68").value);
-  const d65 = Number(document.getElementById("input65").value);
-  if(!pid) return alert("PID cannot empty");
-  const dataObj = {pid,listPrice,d72,d70,d68,d65};
+  if(!pid){alert("PID cannot empty");return;}
+  const dataObj = {
+    pid,
+    listPrice: Number(document.getElementById("inputListPrice").value) || 0,
+    d72: Number(document.getElementById("input72").value) || 0,
+    d70: Number(document.getElementById("input70").value) || 0,
+    d68: Number(document.getElementById("input68").value) || 0,
+    d65: Number(document.getElementById("input65").value) || 0
+  };
   if(currentEditPid){
     const idx = priceData.findIndex(i=>i.pid === currentEditPid);
     if(idx > -1) priceData[idx] = dataObj;
   }else{
-    if(priceData.some(i=>i.pid === pid)) return alert("PID already exists");
+    if(priceData.some(i=>i.pid)){alert("PID already exists");return;}
     priceData.push(dataObj);
   }
   await syncPriceToSheet();
   saveLocalPriceCache();
   renderPriceCard();
-  priceModal.style.display = "none";
-  alert("Saved successfully");
-}
-document.getElementById("deletePriceBtn").onclick = async()=>{
-  if(!confirm("Confirm delete this PID price data?")) return;
+  document.getElementById("priceModal").style.display = "none";
+  alert("Saved OK");
+});
+document.getElementById("deletePriceBtn").addEventListener("click", async()=>{
+  if(!confirm("Delete this PID price data?")) return;
   priceData = priceData.filter(i=>i.pid !== currentEditPid);
   await syncPriceToSheet();
   saveLocalPriceCache();
   renderPriceCard();
-  priceModal.style.display = "none";
+  document.getElementById("priceModal").style.display = "none";
   alert("Deleted");
-}
+});
 
 // 页面初始化
-window.onload = function() {
+window.onload = function(){
   loadLocalCache();
   loadLocalPriceCache();
-  document.getElementById("loginPage").style.display = "flex";
-  document.getElementById("logoutBtn").style.display = "none";
-  document.getElementById("userInfoBar").style.display = "none";
 };
 </script>
 </body>
