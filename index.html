@@ -16,6 +16,11 @@
       --group: #9c27b0;
       --sell: #2196f3;
       --cash: #4caf50;
+      --dis72: #d92121;
+      --dis70: #e66b21;
+      --dis68: #e6b021;
+      --dis65: #23a043;
+      --danger: #ef4444;
     }
     * {margin:0;padding:0;box-sizing:border-box;}
     body {
@@ -31,8 +36,20 @@
       text-align:center;
       border-radius:8px;
       margin-bottom:12px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
     }
     .top-header h1 {font-size:20px;}
+    .back-inv-btn {
+      background:#fff;
+      color:var(--primary-green);
+      border:none;
+      padding:6px 12px;
+      border-radius:4px;
+      cursor:pointer;
+      display:none;
+    }
     .top-bar {
       display:flex;
       justify-content:space-between;
@@ -42,7 +59,7 @@
       flex-wrap:wrap;
     }
     .search-wrapper {position:relative;width:100%;max-width:420px;flex:1;}
-    #stockSearch {
+    #stockSearch,#pidSearch {
       width:100%;
       padding:10px 45px 10px 12px;
       border-radius:6px;
@@ -51,7 +68,7 @@
       color:#fff;
       font-size:14px;
     }
-    .add-btn {
+    .add-btn,.add-price-btn {
       position:absolute;right:6px;top:50%;
       transform:translateY(-50%);
       width:32px;height:32px;
@@ -75,14 +92,14 @@
       font-size:13px;
       cursor:pointer;
       white-space:nowrap;
-      text-decoration:none;
     }
     .nav-button.active {background:var(--light-green);border-color:var(--light-green);}
-    .sync-btn {background:#fff;color:var(--primary-green);border:none;padding:6px 12px;border-radius:4px;cursor:pointer;font-size:13px;}
+    .sync-refresh {background:#fff;color:var(--primary-green);border:none;padding:6px 12px;border-radius:4px;cursor:pointer;font-size:13px;}
     .logout-btn {background:#ef4444;color:#fff;border:none;padding:6px 10px;border-radius:4px;cursor:pointer;font-size:12px;}
     .user-info {display:flex;align-items:center;gap:8px;color:#fff;font-size:14px;}
     .user-avatar-small {width:32px;height:32px;border-radius:50%;object-fit:cover;border:2px solid var(--light-green);}
 
+    /* 库存模块 */
     .module {
       display:none;
       background:#1a1a1a;
@@ -91,7 +108,6 @@
       margin-bottom:12px;
     }
     .module.active {display:block;}
-
     .grid-container {
       display:grid;
       grid-template-columns:repeat(5,1fr);
@@ -103,7 +119,6 @@
     @media (max-width:576px) {
       .grid-container {grid-template-columns:repeat(2,1fr);}
     }
-
     .product-card {
       background:#fff;
       color:#222;
@@ -123,7 +138,6 @@
       justify-content:center;
     }
     .card-img {width:100%;height:100%;object-fit:cover;}
-
     .card-info {
       width:100%;
       border:1px solid #000;
@@ -148,12 +162,50 @@
       font-size:12px;
       line-height:1.5;
     }
-
     .price-cost {color:var(--cost);}
     .price-group {color:var(--group);}
     .price-sell {color:var(--sell);}
     .price-cash {color:var(--cash);}
 
+    /* 价格列表卡片样式 */
+    .price-card {
+      background:#fff;
+      color:#222;
+      border-radius:8px;
+      overflow:hidden;
+      box-shadow:0 2px 8px rgba(0,0,0,0.3);
+      cursor:pointer;
+    }
+    .card-head {
+      background:#222;
+      color:#fff;
+      padding:10px 12px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+    .card-pid {font-weight:bold;font-size:16px;}
+    .card-list-price {font-size:14px;opacity:0.9;}
+    .discount-row {
+      display:grid;
+      grid-template-columns:1fr 1fr 1fr 1fr;
+    }
+    .discount-cell {
+      padding:14px 4px;
+      text-align:center;
+      color:#fff;
+    }
+    .dis-72 {background:var(--dis72);}
+    .dis-70 {background:var(--dis70);}
+    .dis-68 {background:var(--dis68);}
+    .dis-65 {background:var(--dis65);}
+    .dis-label {font-size:12px;margin-bottom:4px;opacity:0.9;}
+    .dis-value {font-size:17px;font-weight:bold;}
+    .empty-tip {
+      width:100%;text-align:center;padding:40px 0;color:#aaa;font-size:16px;
+    }
+
+    /* 弹窗通用 */
     .modal {
       display:none;
       position:fixed;
@@ -175,6 +227,7 @@
       overflow-y:auto;
       position:relative;
     }
+    .modal-price-content {max-width:520px;}
     .modal-close {
       position:absolute;
       top:15px;
@@ -197,7 +250,7 @@
       color:#fff;
     }
     .btn-modal {background:var(--light-green);color:#fff;padding:9px 20px;border:none;border-radius:4px;cursor:pointer;}
-    .btn-delete {background:#ef4444;color:#fff;border:none;padding:9px 16px;border-radius:4px;cursor:pointer;margin-left:8px;}
+    .btn-delete {background:var(--danger);color:#fff;border:none;padding:9px 16px;border-radius:4px;cursor:pointer;margin-left:8px;display:none;}
     .photo-list {display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;}
     .photo-thumb {width:70px;height:70px;object-fit:cover;border-radius:4px;border:1px solid #333;}
     .photo-thumb-wrap {position:relative;}
@@ -266,11 +319,18 @@
 </div>
 
 <div class="container">
-  <header class="top-header"><h1>GT-XTREME BEARING Inventory System</h1></header>
+  <header class="top-header">
+    <h1 id="pageTitle">GT-XTREME BEARING Inventory System</h1>
+    <button class="back-inv-btn" id="backInvBtn" onclick="switchToStock()">← Back Inventory</button>
+  </header>
   <div class="top-bar">
-    <div class="search-wrapper">
+    <div class="search-wrapper" id="stockSearchWrap">
       <input type="text" id="stockSearch" placeholder="Search Name / SKU / Size">
       <button class="add-btn" id="addStockBtn">+</button>
+    </div>
+    <div class="search-wrapper" id="priceSearchWrap" style="display:none;">
+      <input type="text" id="pidSearch" placeholder="Search PID Number">
+      <button class="add-price-btn" id="addPriceBtn">+</button>
     </div>
     <div style="display:flex;align-items:center;gap:10px;">
       <div class="user-info" id="userInfoBar" style="display:none;">
@@ -278,25 +338,35 @@
         <span id="welcomeText">Welcome</span>
       </div>
       <div class="menu" id="menuWrapper">
-        <button class="nav-button active" data-target="stock">Inventory</button>
-        <!-- 修复手机跳转：原生a标签，不会被浏览器弹窗拦截 -->
-        <a href="price-list.html" target="_blank" rel="noopener noreferrer" class="nav-button">Price List</a>
+        <button class="nav-button active" data-target="stock" onclick="switchPage('stock')">Inventory</button>
+        <button class="nav-button" onclick="switchPage('price')">Price List</button>
         <button class="nav-button" data-target="category">Categories</button>
         <button class="nav-button" data-target="user" id="userMenuBtn">Users</button>
         <button class="nav-button" data-target="profile">Profile</button>
-        <button class="btn-modal" id="refreshCloud">Refresh Cloud</button>
+        <button class="sync-refresh" id="refreshCloud">Refresh Cloud</button>
       </div>
       <button class="logout-btn" id="logoutBtn" style="display:none" onclick="logout()">Log Out</button>
     </div>
   </div>
 
-  <div class="module active" id="stock"><div class="grid-container" id="stockGrid"></div></div>
+  <!-- 库存页面 -->
+  <div class="module active" id="stock">
+    <div class="grid-container" id="stockGrid"></div>
+  </div>
+
+  <!-- 价格列表页面（同页面隐藏显示，无需跳转） -->
+  <div class="module" id="priceList">
+    <div class="grid-container" id="priceGrid"></div>
+    <div class="empty-tip" id="priceEmptyTip" style="display:none;">No matching PID data found</div>
+  </div>
+
   <div class="module" id="category">
     <table>
       <thead><tr><th>Category Name</th><th>Action</th></tr></thead>
       <tbody id="categoryTableBody"></tbody>
     </table>
   </div>
+
   <div class="module" id="user">
     <div style="margin-bottom:15px;">
       <button class="btn-modal" id="addUserBtn">Add New User</button>
@@ -306,6 +376,7 @@
       <tbody id="userTableBody"></tbody>
     </table>
   </div>
+
   <div class="module" id="profile">
     <h2 style="text-align:center;margin-bottom:20px;">My Profile</h2>
     <img id="avatarImg" class="avatar" src="">
@@ -319,6 +390,7 @@
   </div>
 </div>
 
+<!-- 分类弹窗 -->
 <div class="modal" id="categoryModal">
   <div class="modal-content">
     <span class="modal-close">&times;</span>
@@ -331,6 +403,7 @@
   </div>
 </div>
 
+<!-- 用户弹窗 -->
 <div class="modal" id="userModal">
   <div class="modal-content">
     <span class="modal-close">&times;</span>
@@ -354,6 +427,7 @@
   </div>
 </div>
 
+<!-- 库存新增/编辑弹窗 -->
 <div class="modal" id="stockModal">
   <div class="modal-content">
     <span class="modal-close">&times;</span>
@@ -372,9 +446,10 @@
         <div class="form-group"><label>Group</label><input type="number" id="goodGroup" step="0.01"></div>
         <div class="form-group"><label>Sell</label><input type="number" id="goodSell" step="0.01"></div>
         <div class="form-group"><label>Cash</label><input type="number" id="goodCash" step="0.01"></div>
-        <div class="form-group"><label>Photos</label>
+        <div class="form-group">
+          <label>Photos</label>
           <div class="photo-list" id="photoList"></div>
-          <input type="file" id="photoUpload" style="display:none;">
+          <input type="file" id="photoUpload" accept="image/*" style="display:none;">
         </div>
       </div>
     </div>
@@ -383,6 +458,43 @@
   </div>
 </div>
 
+<!-- 价格列表弹窗 -->
+<div class="modal" id="priceModal">
+  <div class="modal-content modal-price-content">
+    <span class="modal-close">&times;</span>
+    <h2 id="priceModalTitle">Add New Price Matrix</h2>
+    <div class="form-group">
+      <label>PID</label>
+      <input type="text" id="inputPid">
+    </div>
+    <div class="form-group">
+      <label>LIST PRICE</label>
+      <input type="number" step="0.01" id="inputListPrice">
+    </div>
+    <div class="form-group">
+      <label>-72% Price</label>
+      <input type="number" step="0.01" id="input72">
+    </div>
+    <div class="form-group">
+      <label>-70% Price</label>
+      <input type="number" step="0.01" id="input70">
+    </div>
+    <div class="form-group">
+      <label>-68% Price</label>
+      <input type="number" step="0.01" id="input68">
+    </div>
+    <div class="form-group">
+      <label>-65% Price</label>
+      <input type="number" step="0.01" id="input65">
+    </div>
+    <div style="margin-top:20px;">
+      <button class="btn-modal" id="savePriceBtn">Save Data</button>
+      <button class="btn-delete" id="deletePriceBtn">Delete This PID</button>
+    </div>
+  </div>
+</div>
+
+<!-- 图片放大弹窗 -->
 <div class="lightbox" id="lightbox">
   <span class="lightbox-close">&times;</span>
   <img id="lightboxImg">
@@ -390,9 +502,11 @@
 </div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbzhnGKn-3ecyoEzwJf2-6-7jEPg35H1TxAY3xJiVH-PO1pxLLZ0Dh81HL0wugRwteRktQ/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbxRfRfE5Fz7faElXukupovMZHwNiSJ2c2MOpKsBlegHdM6MYi4s6oNEuYyp69PjX4ZjOA/exec";
 const SYNC_KEY = "stock_sync_data";
+const PRICE_CACHE_KEY = "price_list_sync";
 
+// 库存全局数据
 let localData = {
   stock: [],
   category: ["BEARING","OIL SEALS","BALL BEARING","HUB BEARING","CLUTCH BEARING","TAPERED BEARING","PILLOW BLOCK","FRONT KIT","REAR KIT","GREASE&LUBRICANT"],
@@ -402,12 +516,58 @@ let localData = {
     { username: "gtx", pwd: "123", role: "user", name: "GTX", avatar: "" }
   ]
 };
+// 价格列表全局数据
+let priceData = [];
 
-let currentEditId = null,tempPhotos = [],lightboxPhotos = [];
+let currentEditId = null, tempPhotos = [], lightboxPhotos = [];
+let currentEditPid = null;
 let currentUser = null;
 let isSyncing = false;
-let searchDebounce = null;
+let stockDebounce = null, priceDebounce = null;
 
+// 页面切换核心函数（APK无跳转，仅切换区块显示）
+function switchPage(type) {
+  // 清除所有active导航
+  document.querySelectorAll(".nav-button").forEach(btn=>btn.classList.remove("active"));
+  // 隐藏所有模块
+  document.querySelectorAll(".module").forEach(m=>m.style.display="none");
+  // 切换顶部标题、搜索框、返回按钮
+  const titleEl = document.getElementById("pageTitle");
+  const stockSearchWrap = document.getElementById("stockSearchWrap");
+  const priceSearchWrap = document.getElementById("priceSearchWrap");
+  const backBtn = document.getElementById("backInvBtn");
+
+  if(type === "stock") {
+    document.querySelector('[data-target="stock"]').classList.add("active");
+    document.getElementById("stock").style.display = "block";
+    titleEl.innerText = "GT-XTREME BEARING Inventory System";
+    stockSearchWrap.style.display = "block";
+    priceSearchWrap.style.display = "none";
+    backBtn.style.display = "none";
+  } else if(type === "price") {
+    document.querySelectorAll(".nav-button")[1].classList.add("active");
+    document.getElementById("priceList").style.display = "block";
+    titleEl.innerText = "GT-XTREME Price List (Discount Matrix)";
+    stockSearchWrap.style.display = "none";
+    priceSearchWrap.style.display = "block";
+    backBtn.style.display = "block";
+    // 切换自动刷新价目数据
+    fetchPriceSheet();
+  } else {
+    // 分类/用户/个人资料原有逻辑
+    document.querySelector(`[data-target="${type}"]`).classList.add("active");
+    document.getElementById(type).style.display = "block";
+    stockSearchWrap.style.display = "block";
+    priceSearchWrap.style.display = "none";
+    backBtn.style.display = "none";
+  }
+}
+// 快捷切回库存
+function switchToStock() {
+  switchPage("stock");
+}
+
+// ========== 登录、用户、库存原有全套逻辑不变 ==========
 function login() {
   const username = document.getElementById("loginUsername").value.trim();
   const pwd = document.getElementById("loginPwd").value.trim();
@@ -420,28 +580,25 @@ function login() {
     if(user.role !== "admin") document.getElementById("userMenuBtn").style.display = "none";
     loadLocalCache();
     fetchCloudData();
+    fetchPriceSheet();
     startSyncLoop();
   } else {
     document.getElementById("loginError").style.display = "block";
   }
 }
-
 document.getElementById("loginPwd").addEventListener("keydown", e=>e.key==="Enter"&&login());
 document.getElementById("loginUsername").addEventListener("keydown", e=>e.key==="Enter"&&login());
-
 function updateUserBar(){
   if(!currentUser) return;
   document.getElementById("topAvatar").src = currentUser.avatar || "";
   document.getElementById("welcomeText").textContent = "Welcome, " + (currentUser.name || currentUser.username);
 }
-
 function logout() {
   currentUser = null;
   document.getElementById("loginPage").style.display = "flex";
   document.getElementById("logoutBtn").style.display = "none";
   document.getElementById("userInfoBar").style.display = "none";
 }
-
 function parseCSV(csvText){
   try {
     const lines = csvText.trim().split("\n").filter(x=>x);
@@ -460,22 +617,20 @@ function parseCSV(csvText){
     });
   } catch (e) { return []; }
 }
-
 async function fetchCloudData(){
   if(isSyncing) return;
   isSyncing = true;
   try {
-    const res = await fetch(API_URL, { signal: AbortSignal.timeout(5000) });
+    const res = await fetch(API_URL);
     const csv = await res.text();
     localData.stock = parseCSV(csv);
     saveLocalCache();
     renderStock();
   } catch (e) {
-    console.log("Fetch error:",e);
+    console.log("Stock fetch error:",e);
   }
   isSyncing = false;
 }
-
 async function syncToSheet(){
   if(isSyncing) return;
   isSyncing = true;
@@ -485,62 +640,52 @@ async function syncToSheet(){
       body: JSON.stringify({ action: "updateAll", list: localData.stock })
     });
   } catch (e) {
-    console.log("Sync error:",e);
+    console.log("Stock sync error:",e);
   }
   isSyncing = false;
 }
-
 function startSyncLoop(){
   async function loop(){
     await fetchCloudData();
+    await fetchPriceSheet();
     setTimeout(loop, 300000);
   }
   loop();
 }
-
 function saveLocalCache(){
   try {
     const d = JSON.parse(JSON.stringify(localData));
-    d.stock = d.stock.map(i => {
-      if (i.photos) i.photos = i.photos.slice(0,3);
-      return i;
-    });
+    d.stock = d.stock.map(i => {if(i.photos) i.photos = i.photos.slice(0,3);return i;});
     localStorage.setItem(SYNC_KEY, JSON.stringify(d));
   } catch (e) { localStorage.removeItem(SYNC_KEY); }
 }
-
 function loadLocalCache(){
   const cache = localStorage.getItem(SYNC_KEY);
   if(cache) localData = JSON.parse(cache);
   renderAll();
   if (currentUser) { loadProfile(); updateUserBar(); }
 }
-
-// 修复：过滤a标签，不执行模块切换逻辑
-document.querySelectorAll(".nav-button").forEach(el=>{
-  if(el.tagName === "A") return;
-  el.addEventListener("click",()=>{
-    document.querySelectorAll(".nav-button").forEach(b=>b.classList.remove("active"));
-    document.querySelectorAll(".module").forEach(m=>m.classList.remove("active"));
-    el.classList.add("active");
-    const target = el.dataset.target;
-    if(target) document.getElementById(target).classList.add("active");
-  });
+document.querySelectorAll(".nav-button").forEach(btn=>{
+  if(!btn.onclick && btn.dataset.target){
+    btn.addEventListener("click",()=>{
+      switchPage(btn.dataset.target);
+    });
+  }
 });
-
-document.getElementById("refreshCloud").onclick = fetchCloudData;
-
-stockSearch.addEventListener("input",()=>{
-  clearTimeout(searchDebounce);
-  searchDebounce = setTimeout(renderStock, 300);
+document.getElementById("refreshCloud").onclick = async()=>{
+  await fetchCloudData();
+  await fetchPriceSheet();
+  alert("Data refreshed");
+};
+document.getElementById("stockSearch").addEventListener("input",()=>{
+  clearTimeout(stockDebounce);
+  stockDebounce = setTimeout(renderStock, 300);
 });
-
 function renderAll(){
   renderStock();
   renderCategory();
   renderUser();
 }
-
 function renderStock(){
   const g = document.getElementById("stockGrid");
   const kw = stockSearch.value.toLowerCase();
@@ -549,10 +694,8 @@ function renderStock(){
     (i.id||"").toLowerCase().includes(kw)||
     (i.size||"").toLowerCase().includes(kw)
   );
-
   const frag = document.createDocumentFragment();
   g.innerHTML = "";
-
   if(!list.length){
     const noData = document.createElement("div");
     noData.style.padding = "30px";
@@ -583,7 +726,6 @@ function renderStock(){
             </div>
           </div>
         </div>`;
-
       card.querySelector(".card-img-wrap").onclick = (e) => {
         e.stopPropagation();
         openLightbox(i.photos || []);
@@ -594,14 +736,12 @@ function renderStock(){
   }
   g.appendChild(frag);
 }
-
 function openLightbox(photos) {
   if (!photos || photos.length === 0) return;
   lightboxPhotos = photos;
   lightbox.style.display = "flex";
   lightboxImg.src = photos[0];
-  
-  const thumbs = document.getElementById("lightboxThumbs");
+  const thumbs = lightboxThumbs;
   thumbs.innerHTML = "";
   photos.forEach((src, idx) => {
     const thumb = document.createElement("img");
@@ -616,7 +756,11 @@ function openLightbox(photos) {
     thumbs.appendChild(thumb);
   });
 }
-
+lightbox.querySelector(".lightbox-close").onclick = ()=>{
+  lightbox.style.display = "none";
+  lightboxImg.src = "";
+  lightboxThumbs.innerHTML = "";
+};
 function renderCategory(){
   const b=categoryTableBody;
   const s=goodCategory;
@@ -630,7 +774,6 @@ function renderCategory(){
     s.innerHTML += `<option value="${c}">${c}</option>`;
   });
 }
-
 function renderUser(){
   const b=userTableBody;
   b.innerHTML="";
@@ -641,7 +784,6 @@ function renderUser(){
     </td></tr>`;
   });
 }
-
 function renderPhotoList(){
   const list=photoList;
   list.innerHTML="";
@@ -658,37 +800,34 @@ function renderPhotoList(){
     addBtn.onclick = ()=>photoUpload.click();
     list.appendChild(addBtn);
   }
-  document.querySelectorAll(".del").forEach(el=>{
+  document.querySelectorAll(".photo-thumb-wrap .del").forEach(el=>{
     el.onclick = (e)=>{
       e.stopPropagation();
-      const idx = +el.dataset.index;
+      const idx = Number(el.dataset.index);
       tempPhotos.splice(idx,1);
       renderPhotoList();
     }
   });
 }
-
 photoUpload.onchange = e=>{
-  const f = e.target.files[0]; if(!f)return;
+  const f = e.target.files[0];
+  if(!f || tempPhotos.length>=3) return;
   const r = new FileReader();
   r.onload = ev=>{
-    if(tempPhotos.length>=3) return;
     tempPhotos.push(ev.target.result);
     renderPhotoList();
   };
   r.readAsDataURL(f);
 };
-
 addStockBtn.onclick = ()=>{
   currentEditId=null; tempPhotos=[];
   document.querySelectorAll("#stockModal input").forEach(i=>i.value="");
-  goodStock.value=0;
-  goodBoxPcs.value=0;
+  goodStock.value=0; goodBoxPcs.value=0;
   renderPhotoList();
   deleteInModalBtn.style.display="none";
+  stockModalTitle.innerText = "Add Item";
   stockModal.style.display="flex";
 };
-
 function editStock(id){
   const item = localData.stock.find(s=>s.id===id);
   if(!item)return;
@@ -699,18 +838,19 @@ function editStock(id){
   goodCost.value=item.cost||0; goodGroup.value=item.group||0;
   goodSell.value=item.sell||0; goodCash.value=item.cash||0;
   renderPhotoList(); deleteInModalBtn.style.display="inline-block";
+  stockModalTitle.innerText = "Edit Item";
   stockModal.style.display="flex";
 }
-
 saveStockBtn.onclick = async()=>{
   const id = goodId.value.trim();
   const name = goodName.value.trim();
   if(!id||!name)return alert("SKU & Name required");
   const goods = {
     id,name,category:goodCategory.value,size:goodSize.value,
-    stock:+goodStock.value,boxPcs:+goodBoxPcs.value,
-    cost:+goodCost.value,group:+goodGroup.value,
-    sell:+goodSell.value,cash:+goodCash.value,photos:tempPhotos.slice(0,3)
+    stock:Number(goodStock.value)||0,boxPcs:Number(goodBoxPcs.value)||0,
+    cost:Number(goodCost.value)||0,group:Number(goodGroup.value)||0,
+    sell:Number(goodSell.value)||0,cash:Number(goodCash.value)||0,
+    photos:tempPhotos.slice(0,3)
   };
   if(currentEditId){
     const idx = localData.stock.findIndex(s=>s.id===currentEditId);
@@ -725,9 +865,8 @@ saveStockBtn.onclick = async()=>{
   stockModal.style.display="none";
   alert("Saved");
 };
-
 deleteInModalBtn.onclick = async()=>{
-  if(!confirm("Delete?"))return;
+  if(!confirm("Delete this item?"))return;
   localData.stock = localData.stock.filter(s=>s.id!==currentEditId);
   await syncToSheet();
   saveLocalCache();
@@ -735,77 +874,65 @@ deleteInModalBtn.onclick = async()=>{
   stockModal.style.display="none";
   alert("Deleted");
 };
-
 function editCategory(o){
   currentEditId=o;
   categoryName.value=o;
   categoryModal.style.display="flex";
 }
-
 function deleteCategory(c){
-  if(!confirm("Delete?"))return;
+  if(!confirm("Delete category?"))return;
   localData.category=localData.category.filter(x=>x!==c);
   saveLocalCache();
   renderCategory();
 }
-
 saveCategoryBtn.onclick = ()=>{
   const n = categoryName.value.trim();
-  if(!n)return alert("Name required");
+  if(!n)return alert("Name empty");
   if(currentEditId) localData.category = localData.category.map(x=>x===currentEditId?n:x);
   else if(!localData.category.includes(n)) localData.category.push(n);
   saveLocalCache();
   renderCategory();
   categoryModal.style.display="none";
 };
-
 addUserBtn.onclick = ()=>{
   currentEditId=null;
-  userName.value="";
-  userPwd.value="";
-  userRole.value="user";
+  userName.value=""; userPwd.value=""; userRole.value="user";
   userModal.style.display="flex";
-}
-
+};
 function editUser(u){
   const us=localData.users.find(x=>x.username===u);
   if(!us)return;
   currentEditId=u;
-  userName.value=us.username;
-  userPwd.value=us.pwd;
-  userRole.value=us.role;
+  userName.value=us.username; userPwd.value=us.pwd; userRole.value=us.role;
   userModal.style.display="flex";
 }
-
 function deleteUser(u){
   if(u==="admin")return alert("Cannot delete admin");
-  if(!confirm("Delete?"))return;
+  if(!confirm("Delete user?"))return;
   localData.users=localData.users.filter(x=>x.username!==u);
   saveLocalCache();
   renderUser();
 }
-
 saveUserBtn.onclick = ()=>{
   const un = userName.value.trim();
   const pw = userPwd.value.trim();
   if(!un||!pw)return alert("Username & Password required");
-  const user = {username:un,pwd:pw,role:userRole.value,name:un,avatar:""};
+  const userObj = {username:un,pwd:pw,role:userRole.value,name:un,avatar:""};
   if(currentEditId){
     const i = localData.users.findIndex(x=>x.username===currentEditId);
-    if(i>-1) localData.users[i]=user;
-  }else if(!localData.users.some(x=>x.username===un)) localData.users.push(user);
+    if(i>-1) localData.users[i]=userObj;
+  }else if(!localData.users.some(x=>x.username===un)){
+    localData.users.push(userObj);
+  }
   saveLocalCache();
   renderUser();
   userModal.style.display="none";
 };
-
 function loadProfile(){
   if (!currentUser) return;
   profileName.value = currentUser.name || currentUser.username;
   avatarImg.src = currentUser.avatar || "";
-  updateUserBar();
 }
-
 function saveProfile(){
   if (!currentUser) return;
   currentUser.name = profileName.value.trim();
@@ -816,7 +943,6 @@ function saveProfile(){
   updateUserBar();
   alert("Profile saved");
 }
-
 avatarUpload.onchange = e=>{
   const f=e.target.files[0]; if(!f)return;
   const r=new FileReader();
@@ -832,21 +958,180 @@ avatarUpload.onchange = e=>{
   };
   r.readAsDataURL(f);
 };
-
 document.querySelectorAll(".modal-close").forEach(x=>{
   x.onclick=()=>{
     document.querySelectorAll(".modal").forEach(m=>m.style.display="none");
   }
 });
 
-lightbox.querySelector(".lightbox-close").onclick = ()=>{
-  lightbox.style.display="none";
-  lightboxImg.src = "";
-  lightboxThumbs.innerHTML = "";
-};
+// ========== 价格列表全新逻辑（同页面，独立读取PriceList工作表） ==========
+const PRICE_CACHE_KEY = "price_list_sync";
+async function fetchPriceSheet(){
+  if(isSyncing) return;
+  isSyncing = true;
+  try {
+    const res = await fetch(API_URL + "?type=price");
+    const csvText = await res.text();
+    priceData = parsePriceCSV(csvText);
+    saveLocalPriceCache();
+    renderPriceCard();
+  }catch(e){
+    console.log("Price sheet fetch error",e);
+  }
+  isSyncing = false;
+}
+function saveLocalPriceCache(){
+  localStorage.setItem(PRICE_CACHE_KEY, JSON.stringify(priceData));
+}
+function loadLocalPriceCache(){
+  const cache = localStorage.getItem(PRICE_CACHE_KEY);
+  if(cache) priceData = JSON.parse(cache);
+  renderPriceCard();
+}
+function parsePriceCSV(csv){
+  try{
+    const lines = csv.trim().split("\n").filter(s=>s);
+    if(lines.length < 2) return [];
+    const header = lines[0].split(",");
+    return lines.slice(1).map(row=>{
+      const arr = row.split(",");
+      return {
+        pid: arr[0]?.trim() || "",
+        listPrice: Number(arr[1]) || 0,
+        d72: Number(arr[2]) || 0,
+        d70: Number(arr[3]) || 0,
+        d68: Number(arr[4]) || 0,
+        d65: Number(arr[5]) || 0
+      }
+    })
+  }catch(err){
+    return [];
+  }
+}
+async function syncPriceToSheet(){
+  if(isSyncing) return;
+  isSyncing = true;
+  try{
+    await fetch(API_URL, {
+      method:"POST",
+      body: JSON.stringify({
+        action: "updatePriceList",
+        priceList: priceData
+      })
+    })
+  }catch(e){
+    console.log("Sync price error",e);
+  }
+  isSyncing = false;
+}
+function renderPriceCard(){
+  const gridWrap = document.getElementById("priceGrid");
+  const emptyTip = document.getElementById("priceEmptyTip");
+  const searchWord = document.getElementById("pidSearch").value.trim().toLowerCase();
+  const filterList = priceData.filter(item=> item.pid.toLowerCase().includes(searchWord));
+  gridWrap.innerHTML = "";
+  if(filterList.length === 0){
+    emptyTip.style.display = "block";
+    return;
+  }
+  emptyTip.style.display = "none";
+  const fragment = document.createDocumentFragment();
+  filterList.forEach(item=>{
+    const card = document.createElement("div");
+    card.className = "price-card";
+    card.dataset.pid = item.pid;
+    card.innerHTML = `
+      <div class="card-head">
+        <span class="card-pid">PID: ${item.pid}</span>
+        <span class="card-list-price">LIST PRICE: ${item.listPrice.toFixed(2)}</span>
+      </div>
+      <div class="discount-row">
+        <div class="discount-cell dis-72">
+          <div class="dis-label">-72%</div>
+          <div class="dis-value">${item.d72.toFixed(2)}</div>
+        </div>
+        <div class="discount-cell dis-70">
+          <div class="dis-label">-70%</div>
+          <div class="dis-value">${item.d70.toFixed(2)}</div>
+        </div>
+        <div class="discount-cell dis-68">
+          <div class="dis-label">-68%</div>
+          <div class="dis-value">${item.d68.toFixed(2)}</div>
+        </div>
+        <div class="discount-cell dis-65">
+          <div class="dis-label">-65%</div>
+          <div class="dis-value">${item.d65.toFixed(2)}</div>
+        </div>
+      </div>
+    `;
+    card.onclick = ()=> openEditPriceModal(item.pid);
+    fragment.appendChild(card);
+  })
+  gridWrap.appendChild(fragment);
+}
+document.getElementById("pidSearch").addEventListener("input",()=>{
+  clearTimeout(priceDebounce);
+  priceDebounce = setTimeout(renderPriceCard, 300);
+})
+document.getElementById("addPriceBtn").onclick = ()=>{
+  currentEditPid = null;
+  document.getElementById("priceModalTitle").textContent = "Add New Price Matrix";
+  ["inputPid","inputListPrice","input72","input70","input68","input65"].forEach(id=>{
+    document.getElementById(id).value = "";
+  })
+  document.getElementById("deletePriceBtn").style.display = "none";
+  priceModal.style.display = "flex";
+}
+function openEditPriceModal(pid){
+  const target = priceData.find(x=>x.pid === pid);
+  if(!target) return;
+  currentEditPid = pid;
+  document.getElementById("priceModalTitle").textContent = "Edit Price Matrix";
+  document.getElementById("inputPid").value = target.pid;
+  document.getElementById("inputListPrice").value = target.listPrice;
+  document.getElementById("input72").value = target.d72;
+  document.getElementById("input70").value = target.d70;
+  document.getElementById("input68").value = target.d68;
+  document.getElementById("input65").value = target.d65;
+  document.getElementById("deletePriceBtn").style.display = "inline-block";
+  priceModal.style.display = "flex";
+}
+document.getElementById("savePriceBtn").onclick = async()=>{
+  const pid = document.getElementById("inputPid").value.trim();
+  const listPrice = Number(document.getElementById("inputListPrice").value);
+  const d72 = Number(document.getElementById("input72").value);
+  const d70 = Number(document.getElementById("input70").value);
+  const d68 = Number(document.getElementById("input68").value);
+  const d65 = Number(document.getElementById("input65").value);
+  if(!pid) return alert("PID cannot empty");
+  const dataObj = {pid,listPrice,d72,d70,d68,d65};
+  if(currentEditPid){
+    const idx = priceData.findIndex(i=>i.pid === currentEditPid);
+    if(idx > -1) priceData[idx] = dataObj;
+  }else{
+    if(priceData.some(i=>i.pid === pid)) return alert("PID already exists");
+    priceData.push(dataObj);
+  }
+  await syncPriceToSheet();
+  saveLocalPriceCache();
+  renderPriceCard();
+  priceModal.style.display = "none";
+  alert("Saved successfully");
+}
+document.getElementById("deletePriceBtn").onclick = async()=>{
+  if(!confirm("Confirm delete this PID price data?")) return;
+  priceData = priceData.filter(i=>i.pid !== currentEditPid);
+  await syncPriceToSheet();
+  saveLocalPriceCache();
+  renderPriceCard();
+  priceModal.style.display = "none";
+  alert("Deleted");
+}
 
+// 页面初始化
 window.onload = function() {
   loadLocalCache();
+  loadLocalPriceCache();
   document.getElementById("loginPage").style.display = "flex";
   document.getElementById("logoutBtn").style.display = "none";
   document.getElementById("userInfoBar").style.display = "none";
