@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GT-XTREME Price List</title>
+  <style>
+    :root {
+      --primary-green: #2E7D32;
+      --light-green: #4CAF50;
+      --bg-dark: #121212;
+      --card-dark: #1a1a1a;
+      --text-light: #F5F5F5;
+      --text-dark: #222222;
+      --dis72: #d92121;
+      --dis70: #e66b21;
+      --dis68: #e6b021;
+      --dis65: #23a043;
+      --danger: #ef4444;
+    }
+    * {margin:0;padding:0;box-sizing:border-box;}
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-light);
+      font-family: system-ui, sans-serif;
+    }
+    .container {max-width:1400px;margin:0 auto;padding:12px;}
+    .top-header {
+      background-color: var(--primary-green);
+      color: white;
+      padding:12px;
+      text-align:center;
+      border-radius:8px;
+      margin-bottom:12px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+    .top-header h1 {font-size:20px;}
+    .back-btn {
+      background:#fff;
+      color:var(--primary-green);
+      border:none;
+      padding:6px 12px;
+      border-radius:4px;
+      cursor:pointer;
+    }
+    .top-bar {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      margin-bottom:12px;
+      flex-wrap:wrap;
+    }
+    .search-wrapper {position:relative;width:100%;max-width:420px;flex:1;}
+    #pidSearch {
+      width:100%;
+      padding:10px 45px 10px 12px;
+      border-radius:6px;
+      border:1px solid #333;
+      background:#1a1a1a;
+      color:#fff;
+      font-size:14px;
+    }
+    .add-price-btn {
+      position:absolute;right:6px;top:50%;
+      transform:translateY(-50%);
+      width:32px;height:32px;
+      border-radius:6px;
+      background:var(--light-green);
+      color:#fff;
+      border:none;
+      font-size:18px;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .sync-refresh {
+      background:#fff;color:var(--primary-green);border:none;padding:6px 12px;border-radius:4px;cursor:pointer;font-size:13px;
+    }
+    .grid-container {
+      display:grid;
+      grid-template-columns:repeat(5,1fr);
+      gap:12px;
+    }
+    @media (max-width:992px) {
+      .grid-container {grid-template-columns:repeat(3,1fr);}
+    }
+    @media (max-width:576px) {
+      .grid-container {grid-template-columns:repeat(2,1fr);}
+    }
+    .price-card {
+      background:#fff;
+      color:#222;
+      border-radius:8px;
+      overflow:hidden;
+      box-shadow:0 2px 8px rgba(0,0,0,0.3);
+      cursor:pointer;
+    }
+    .card-head {
+      background:#222;
+      color:#fff;
+      padding:10px 12px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+    .card-pid {font-weight:bold;font-size:16px;}
+    .card-list-price {font-size:14px;opacity:0.9;}
+    .discount-row {
+      display:grid;
+      grid-template-columns:1fr 1fr 1fr 1fr;
+    }
+    .discount-cell {
+      padding:14px 4px;
+      text-align:center;
+      color:#fff;
+    }
+    .dis-72 {background:var(--dis72);}
+    .dis-70 {background:var(--dis70);}
+    .dis-68 {background:var(--dis68);}
+    .dis-65 {background:var(--dis65);}
+    .dis-label {font-size:12px;margin-bottom:4px;opacity:0.9;}
+    .dis-value {font-size:17px;font-weight:bold;}
+    .empty-tip {
+      width:100%;text-align:center;padding:40px 0;color:#aaa;font-size:16px;
+    }
+    .modal {
+      display:none;
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,0.7);
+      justify-content:center;
+      align-items:center;
+      z-index:1000;
+      padding:12px;
+    }
+    .modal-content {
+      background:#1a1a1a;
+      border-radius:8px;
+      width:100%;
+      max-width:520px;
+      padding:20px;
+      color:#fff;
+      max-height:90vh;
+      overflow-y:auto;
+      position:relative;
+    }
+    .modal-close {
+      position:absolute;
+      top:15px;
+      right:15px;
+      font-size:22px;
+      cursor:pointer;
+      color:#fff;
+    }
+    .form-group {margin-bottom:14px;}
+    .form-group label {display:block;margin-bottom:5px;color:#ccc;font-weight:bold;}
+    .form-group input {
+      width:100%;
+      padding:9px;
+      border:1px solid #333;
+      border-radius:4px;
+      background:#000;
+      color:#fff;
+    }
+    .btn-save {background:var(--light-green);color:#fff;padding:9px 20px;border:none;border-radius:4px;cursor:pointer;}
+    .btn-delete {background:var(--danger);color:#fff;border:none;padding:9px 16px;border-radius:4px;cursor:pointer;margin-left:8px;display:none;}
+  </style>
+</head>
+<body>
+<div class="container">
+  <header class="top-header">
+    <h1>GT-XTREME Price List (Discount Matrix)</h1>
+    <button class="back-btn" onclick="window.close()">← Close & Back Inventory</button>
+  </header>
+
+  <div class="top-bar">
+    <div class="search-wrapper">
+      <input type="text" id="pidSearch" placeholder="Search PID Number">
+      <button class="add-price-btn" id="addPriceBtn">+</button>
+    </div>
+    <button class="sync-refresh" id="refreshPriceCloud">Refresh Sheet Data</button>
+  </div>
+
+  <div class="grid-container" id="priceGrid"></div>
+  <div class="empty-tip" id="emptyTip" style="display:none;">No matching PID data found</div>
+</div>
+
+<div class="modal" id="priceModal">
+  <div class="modal-content">
+    <span class="modal-close">&times;</span>
+    <h2 id="modalTitle">Add New Price Matrix</h2>
+    <div class="form-group">
+      <label>PID</label>
+      <input type="text" id="inputPid">
+    </div>
+    <div class="form-group">
+      <label>LIST PRICE</label>
+      <input type="number" step="0.01" id="inputListPrice">
+    </div>
+    <div class="form-group">
+      <label>-72% Price</label>
+      <input type="number" step="0.01" id="input72">
+    </div>
+    <div class="form-group">
+      <label>-70% Price</label>
+      <input type="number" step="0.01" id="input70">
+    </div>
+    <div class="form-group">
+      <label>-68% Price</label>
+      <input type="number" step="0.01" id="input68">
+    </div>
+    <div class="form-group">
+      <label>-65% Price</label>
+      <input type="number" step="0.01" id="input65">
+    </div>
+    <div style="margin-top:20px;">
+      <button class="btn-save" id="savePriceBtn">Save Data</button>
+      <button class="btn-delete" id="deletePriceBtn">Delete This PID</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const API_URL = "https://script.google.com/macros/s/AKfycbzhnGKn-3ecyoEzwJf2-6-7jEPg35H1TxAY3xJiVH-PO1pxLLZ0Dh81HL0wugRwteRktQ/exec";
+const PRICE_CACHE_KEY = "price_list_sync";
+
+let priceData = [];
+let currentEditPid = null;
+let isSyncing = false;
+let searchDebounce = null;
+
+window.onload = function(){
+  loadLocalPriceCache();
+  fetchPriceSheet();
+  startPriceSyncLoop();
+}
+
+// 单独读取PriceList工作表
+async function fetchPriceSheet(){
+  if(isSyncing) return;
+  isSyncing = true;
+  try {
+    const res = await fetch(API_URL + "?type=price");
+    const csvText = await res.text();
+    priceData = parsePriceCSV(csvText);
+    saveLocalPriceCache();
+    renderPriceCard();
+  }catch(e){
+    console.log("Price sheet fetch error",e);
+  }
+  isSyncing = false;
+}
+
+function saveLocalPriceCache(){
+  localStorage.setItem(PRICE_CACHE_KEY, JSON.stringify(priceData));
+}
+function loadLocalPriceCache(){
+  const cache = localStorage.getItem(PRICE_CACHE_KEY);
+  if(cache) priceData = JSON.parse(cache);
+  renderPriceCard();
+}
+
+function parsePriceCSV(csv){
+  try{
+    const lines = csv.trim().split("\n").filter(s=>s);
+    if(lines.length < 2) return [];
+    const header = lines[0].split(",");
+    return lines.slice(1).map(row=>{
+      const arr = row.split(",");
+      return {
+        pid: arr[0]?.trim() || "",
+        listPrice: Number(arr[1]) || 0,
+        d72: Number(arr[2]) || 0,
+        d70: Number(arr[3]) || 0,
+        d68: Number(arr[4]) || 0,
+        d65: Number(arr[5]) || 0
+      }
+    })
+  }catch(err){
+    return [];
+  }
+}
+
+async function syncPriceToSheet(){
+  if(isSyncing) return;
+  isSyncing = true;
+  try{
+    await fetch(API_URL, {
+      method:"POST",
+      body: JSON.stringify({
+        action: "updatePriceList",
+        priceList: priceData
+      })
+    })
+  }catch(e){
+    console.log("Sync price error",e);
+  }
+  isSyncing = false;
+}
+
+function startPriceSyncLoop(){
+  async function loop(){
+    await fetchPriceSheet();
+    setTimeout(loop, 300000);
+  }
+  loop();
+}
+
+function renderPriceCard(){
+  const gridWrap = document.getElementById("priceGrid");
+  const emptyTip = document.getElementById("emptyTip");
+  const searchWord = document.getElementById("pidSearch").value.trim().toLowerCase();
+  
+  const filterList = priceData.filter(item=> item.pid.toLowerCase().includes(searchWord));
+  gridWrap.innerHTML = "";
+
+  if(filterList.length === 0){
+    emptyTip.style.display = "block";
+    return;
+  }
+  emptyTip.style.display = "none";
+
+  const fragment = document.createDocumentFragment();
+  filterList.forEach(item=>{
+    const card = document.createElement("div");
+    card.className = "price-card";
+    card.dataset.pid = item.pid;
+    card.innerHTML = `
+      <div class="card-head">
+        <span class="card-pid">PID: ${item.pid}</span>
+        <span class="card-list-price">LIST PRICE: ${item.listPrice.toFixed(2)}</span>
+      </div>
+      <div class="discount-row">
+        <div class="discount-cell dis-72">
+          <div class="dis-label">-72%</div>
+          <div class="dis-value">${item.d72.toFixed(2)}</div>
+        </div>
+        <div class="discount-cell dis-70">
+          <div class="dis-label">-70%</div>
+          <div class="dis-value">${item.d70.toFixed(2)}</div>
+        </div>
+        <div class="discount-cell dis-68">
+          <div class="dis-label">-68%</div>
+          <div class="dis-value">${item.d68.toFixed(2)}</div>
+        </div>
+        <div class="discount-cell dis-65">
+          <div class="dis-label">-65%</div>
+          <div class="dis-value">${item.d65.toFixed(2)}</div>
+        </div>
+      </div>
+    `;
+    card.onclick = ()=> openEditModal(item.pid);
+    fragment.appendChild(card);
+  })
+  gridWrap.appendChild(fragment

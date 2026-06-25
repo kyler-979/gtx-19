@@ -278,6 +278,8 @@
       </div>
       <div class="menu" id="menuWrapper">
         <button class="nav-button active" data-target="stock">Inventory</button>
+        <!-- 独立跳转价格列表页面 -->
+        <button class="nav-button" onclick="window.open('price-list.html','_blank')">Price List</button>
         <button class="nav-button" data-target="category">Categories</button>
         <button class="nav-button" data-target="user" id="userMenuBtn">Users</button>
         <button class="nav-button" data-target="profile">Profile</button>
@@ -487,11 +489,10 @@ async function syncToSheet(){
   isSyncing = false;
 }
 
-// 改成 5 分钟同步一次，不再频繁
 function startSyncLoop(){
   async function loop(){
     await fetchCloudData();
-    setTimeout(loop, 300000); // 5 分钟
+    setTimeout(loop, 300000);
   }
   loop();
 }
@@ -515,12 +516,15 @@ function loadLocalCache(){
 }
 
 document.querySelectorAll(".nav-button").forEach(btn=>{
-  btn.addEventListener("click",()=>{
-    document.querySelectorAll(".nav-button").forEach(b=>b.classList.remove("active"));
-    document.querySelectorAll(".module").forEach(m=>m.classList.remove("active"));
-    btn.classList.add("active");
-    document.getElementById(btn.dataset.target).classList.add("active");
-  });
+  if(!btn.onclick){
+    btn.addEventListener("click",()=>{
+      document.querySelectorAll(".nav-button").forEach(b=>b.classList.remove("active"));
+      document.querySelectorAll(".module").forEach(m=>m.classList.remove("active"));
+      btn.classList.add("active");
+      const target = btn.dataset.target;
+      if(target) document.getElementById(target).classList.add("active");
+    });
+  }
 });
 
 document.getElementById("refreshCloud").onclick = fetchCloudData;
@@ -716,7 +720,7 @@ saveStockBtn.onclick = async()=>{
   }
   await syncToSheet();
   saveLocalCache();
-  renderStock(); // 保存后立刻刷新列表
+  renderStock();
   stockModal.style.display="none";
   alert("Saved");
 };
@@ -726,7 +730,7 @@ deleteInModalBtn.onclick = async()=>{
   localData.stock = localData.stock.filter(s=>s.id!==currentEditId);
   await syncToSheet();
   saveLocalCache();
-  renderStock(); // 删除后立刻刷新
+  renderStock();
   stockModal.style.display="none";
   alert("Deleted");
 };
@@ -741,7 +745,7 @@ function deleteCategory(c){
   if(!confirm("Delete?"))return;
   localData.category=localData.category.filter(x=>x!==c);
   saveLocalCache();
-  renderCategory(); // 删除后立刻刷新
+  renderCategory();
 }
 
 saveCategoryBtn.onclick = ()=>{
@@ -750,7 +754,7 @@ saveCategoryBtn.onclick = ()=>{
   if(currentEditId) localData.category = localData.category.map(x=>x===currentEditId?n:x);
   else if(!localData.category.includes(n)) localData.category.push(n);
   saveLocalCache();
-  renderCategory(); // 保存后立刻刷新
+  renderCategory();
   categoryModal.style.display="none";
 };
 
@@ -777,7 +781,7 @@ function deleteUser(u){
   if(!confirm("Delete?"))return;
   localData.users=localData.users.filter(x=>x.username!==u);
   saveLocalCache();
-  renderUser(); // 删除后立刻刷新
+  renderUser();
 }
 
 saveUserBtn.onclick = ()=>{
@@ -790,7 +794,7 @@ saveUserBtn.onclick = ()=>{
     if(i>-1) localData.users[i]=user;
   }else if(!localData.users.some(x=>x.username===un)) localData.users.push(user);
   saveLocalCache();
-  renderUser(); // 保存后立刻刷新
+  renderUser();
   userModal.style.display="none";
 };
 
