@@ -107,7 +107,7 @@
       gap:12px;
     }
     @media (max-width:992px) {.grid-container {grid-template-columns:repeat(3,1fr);}}
-    @media (max-width:576px) {.grid-container {grid-template-columns:repeat(2,1fr);}}
+    @media (max-width:576px) {.grid-container {grid-template-columns:repeat(1,1fr);}}
 
     .product-card {
       background:#fff;color:#222;
@@ -137,12 +137,29 @@
       overflow:hidden;
       box-shadow:0 2px 8px rgba(0,0,0.3);
       cursor:pointer;
+      width:100%;
     }
     .card-head {
-      background:#222;color:#fff;padding:10px 12px;display:flex;justify-content:space-between;align-items:center;
+      background:#222;
+      color:#fff;
+      padding:14px 12px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
     }
-    .card-pid {font-weight:bold;font-size:28px;}
-    .card-list-price {font-size:28px;font-weight:bold;opacity:0.9;}
+    .card-pid {
+      font-weight:bold;
+      font-size:30px;
+      width:100%;
+      text-align:center;
+    }
+    .card-list-price {
+      font-size:28px;
+      font-weight:bold;
+      opacity:0.9;
+      width:100%;
+      text-align:center;
+    }
     .discount-row {display:grid;grid-template-columns:1fr 1fr 1fr 1fr;}
     .discount-cell {padding:14px 4px;text-align:center;color:#fff;}
     .dis-72 {background:var(--dis72);}
@@ -977,7 +994,6 @@ function renderPriceCard(){
   filter.forEach(item=>{
     const card = document.createElement("div");
     card.className = "price-card";
-    // 已修改：只保留数字，去掉 PID: / LIST PRICE: 文字
     card.innerHTML = `
       <div class="card-head">
         <span class="card-pid">${item.pid}</span>
@@ -1060,4 +1076,4 @@ window.onload = function(){
 };
 </script>
 </body>
-</html
+</html>
