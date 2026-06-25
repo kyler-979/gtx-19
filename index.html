@@ -107,7 +107,7 @@
       gap:12px;
     }
     @media (max-width:992px) {.grid-container {grid-template-columns:repeat(3,1fr);}}
-    @media (max-width:576px) {.grid-container {grid-template-columns:repeat(1,1fr);}}
+    @media (max-width:576px) {.grid-container {grid-template-columns:repeat(2,1fr);}}
 
     .product-card {
       background:#fff;color:#222;
@@ -149,16 +149,18 @@
     }
     .card-pid {
       font-weight:bold;
-      font-size:30px;
+      font-size:23px;
       width:100%;
-      text-align:center;
+      text-align:left;
+      padding-bottom:8px;
+      border-bottom:1px solid #666;
     }
     .card-list-price {
-      font-size:28px;
+      font-size:18px;
       font-weight:bold;
       opacity:0.9;
       width:100%;
-      text-align:center;
+      text-align:left;
     }
     .discount-row {display:grid;grid-template-columns:1fr 1fr 1fr 1fr;}
     .discount-cell {padding:14px 4px;text-align:center;color:#fff;}
@@ -1059,21 +1061,4 @@ document.getElementById("savePriceBtn").addEventListener("click", async()=>{
   document.getElementById("priceModal").style.display = "none";
   alert("Saved OK");
 });
-document.getElementById("deletePriceBtn").addEventListener("click", async()=>{
-  if(!confirm("Delete this PID price data?")) return;
-  priceData = priceData.filter(i=>i.pid !== currentEditPid);
-  await syncPriceToSheet();
-  saveLocalPriceCache();
-  renderPriceCard();
-  document.getElementById("priceModal").style.display = "none";
-  alert("Deleted");
-});
-
-// 页面加载初始化
-window.onload = function(){
-  loadLocalCache();
-  loadLocalPriceCache();
-};
-</script>
-</body>
-</html>
+document.getElementById("deletePriceBtn").add
