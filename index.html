@@ -86,7 +86,7 @@
     .nav-button {
       background:transparent;
       color:white;
-      border:1px solid rgba(255,255,0.3);
+      border:1px solid rgba(255,255,255,0.3);
       padding:7px 12px;
       border-radius:4px;
       font-size:13px;
@@ -114,7 +114,7 @@
       border-radius:8px;
       overflow:hidden;
       cursor:pointer;
-      box-shadow:0 2px 8px rgba(0,0,0.2);
+      box-shadow:0 2px 8px rgba(0,0,0,0.2);
       display:flex;
       flex-direction:column;
     }
@@ -135,14 +135,14 @@
       background:#fff;color:#222;
       border-radius:8px;
       overflow:hidden;
-      box-shadow:0 2px 8px rgba(0,0,0.3);
+      box-shadow:0 2px 8px rgba(0,0,0,0.3);
       cursor:pointer;
     }
     .card-head {
       background:#222;color:#fff;padding:10px 12px;display:flex;justify-content:space-between;align-items:center;
     }
-    .card-pid {font-weight:bold;font-size:16px;}
-    .card-list-price {font-size:14;opacity:0.9;}
+    .card-pid {font-weight:bold;font-size:24px;}
+    .card-list-price {font-size:24px;font-weight:bold;opacity:0.9;}
     .discount-row {display:grid;grid-template-columns:1fr 1fr 1fr 1fr;}
     .discount-cell {padding:14px 4px;text-align:center;color:#fff;}
     .dis-72 {background:var(--dis72);}
@@ -189,7 +189,7 @@
     .btn-modal {background:var(--light-green);color:#fff;padding:9px 20px;border:none;border-radius:4px;cursor:pointer;}
     .btn-delete {background:var(--danger);color:#fff;border:none;padding:9px 16px;border-radius:4px;cursor:pointer;margin-left:8px;display:none;}
     .photo-list {display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;}
-    .photo-thumb {width:70px;height:70;object-fit:cover;border-radius:4px;border:1px solid #333;}
+    .photo-thumb {width:70px;height:70px;object-fit:cover;border-radius:4px;border:1px solid #333;}
     .photo-thumb-wrap {position:relative;}
     .photo-thumb-wrap .del {
       position:absolute;top:-6px;right:-6px;
@@ -207,7 +207,7 @@
       display:none;
       position:fixed;
       inset:0;
-      background:rgba(0,0,0.95);
+      background:rgba(0,0,0,0.95);
       z-index:2000;
       align-items:center;
       justify-content:center;
@@ -233,7 +233,7 @@
     .login-card h2 {text-align:center;margin-bottom:20px;color:var(--light-green);}
     .login-btn {
       width:100%;background:var(--primary-green);color:#fff;
-      padding:10px;border:none;border-radius:4px;cursor:font-size:16px;margin-top:10px;
+      padding:10px;border:none;border-radius:4px;cursor:pointer;font-size:16px;margin-top:10px;
     }
     .login-error {color:var(--danger);text-align:center;margin-bottom:15px;display:none;}
   </style>
@@ -276,7 +276,7 @@
         <span id="welcomeText">Welcome</span>
       </div>
       <div class="menu" id="menuWrapper">
-        <button class="nav-button" onclick="switchPage('stock')">Inventory</button>
+        <button class="nav-button active" onclick="switchPage('stock')">Inventory</button>
         <button class="nav-button" onclick="switchPage('price')">Price List</button>
         <button class="nav-button" onclick="switchPage('category')">Categories</button>
         <button class="nav-button" onclick="switchPage('user')" id="userMenuBtn">Users</button>
@@ -446,7 +446,7 @@
 // 自动清除旧缓存，解决登录卡住
 localStorage.removeItem("stock_sync_data");
 localStorage.removeItem("price_list_sync");
-// 你提供的API地址已完整填入
+// 你的API地址
 const API_URL = "https://script.google.com/macros/s/AKfycbxRfRfE5Fz7faElXukupovMZHwNiSJ2c2MOpKsBlegHdM6MYi4s6oNEuYyp69PjX4ZjOA/exec";
 const SYNC_KEY = "stock_sync_data";
 const PRICE_CACHE_KEY = "price_list_sync";
@@ -648,7 +648,7 @@ function renderStock(){
           </div>
           <div>
             <div class="price-sell">Sell: ${Number(item.sell||0).toFixed(2)}</div>
-            <div class="price-cash">Cash: ${Number(item.cost||0).toFixed(2)}</div>
+            <div class="price-cash">Cash: ${Number(item.cash||0).toFixed(2)}</div>
           </div>
         </div>
       </div>
@@ -885,13 +885,13 @@ function saveProfile(){
   currentUser.name = newName;
   if(newPwd){
     const idx = localData.users.findIndex(u=>u.username === currentUser.username);
-    if(idx > -1) localData.users[idx] = currentUser;
+    if(idx > -1) localData.users[idx].pwd = newPwd;
     currentUser.pwd = newPwd;
   }
   const avatarImg = document.getElementById("avatarImg").src;
   currentUser.avatar = avatarImg;
   const idx = localData.users.findIndex(u => u.username === currentUser.username);
-  if (idx > -1) localData.users[idx] = currentUser;
+  if (idx > -1) localData.users[idx] = avatarImg;
   saveLocalCache();
   document.getElementById("welcomeText").innerText = "Welcome, " + currentUser.name;
   alert("Profile saved");
@@ -911,7 +911,7 @@ function closeAllModal(){
 }
 document.querySelectorAll(".modal-close").forEach(x=>x.onclick = closeAllModal);
 
-// ========= Price List 独立接口逻辑 =========
+// ===================== PRICE LIST 逻辑 =====================
 async function fetchPriceSheet(){
   if(isSyncing) return;
   isSyncing = true;
@@ -975,10 +975,11 @@ function renderPriceCard(){
   filter.forEach(item=>{
     const card = document.createElement("div");
     card.className = "price-card";
+    // 修改点：只输出数值，去掉 PID: / LIST PRICE: 文字，字号24px放大
     card.innerHTML = `
       <div class="card-head">
-        <span class="card-pid">PID: ${item.pid}</span>
-        <span class="card-list-price">LIST PRICE: ${Number(item.listPrice).toFixed(2)}</span>
+        <span class="card-pid">${item.pid}</span>
+        <span class="card-list-price">${Number(item.listPrice).toFixed(2)}</span>
       </div>
       <div class="discount-row">
         <div class="discount-cell dis-72"><div class="dis-label">-72%</div><div class="dis-value">${Number(item.d72).toFixed(2)}</div></div>
@@ -989,7 +990,7 @@ function renderPriceCard(){
     `;
     card.onclick = ()=> openEditPrice(item.pid);
     grid.appendChild(card);
-  });
+  })
 }
 document.getElementById("pidSearch").addEventListener("input",()=>{
   clearTimeout(priceDebounce);
@@ -1031,7 +1032,7 @@ document.getElementById("savePriceBtn").addEventListener("click", async()=>{
     const idx = priceData.findIndex(i=>i.pid === currentEditPid);
     if(idx > -1) priceData[idx] = dataObj;
   }else{
-    if(priceData.some(i=>i.pid)){alert("PID already exists");return;}
+    if(priceData.some(i=>i.pid === pid)){alert("PID already exists");return;}
     priceData.push(dataObj);
   }
   await syncPriceToSheet();
@@ -1050,11 +1051,5 @@ document.getElementById("deletePriceBtn").addEventListener("click", async()=>{
   alert("Deleted");
 });
 
-// 页面初始化
-window.onload = function(){
-  loadLocalCache();
-  loadLocalPriceCache();
-};
-</script>
-</body>
-</html>
+// 页面初始化：登录成功自动加载Inventory商品
+window
