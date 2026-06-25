@@ -239,7 +239,6 @@ window.onload = function(){
   startPriceSyncLoop();
 }
 
-// 单独读取PriceList工作表
 async function fetchPriceSheet(){
   if(isSyncing) return;
   isSyncing = true;
@@ -353,7 +352,4 @@ function renderPriceCard(){
         </div>
       </div>
     `;
-    card.onclick = ()=> openEditModal(item.pid);
-    fragment.appendChild(card);
-  })
-  gridWrap.appendChild(fragment
+    card.onclick = ()=>
