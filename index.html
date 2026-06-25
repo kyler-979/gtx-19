@@ -86,7 +86,7 @@
     .nav-button {
       background:transparent;
       color:white;
-      border:1px solid rgba(255,255,255,0.3);
+      border:1px solid rgba(255,255,0.3);
       padding:7px 12px;
       border-radius:4px;
       font-size:13px;
@@ -114,7 +114,7 @@
       border-radius:8px;
       overflow:hidden;
       cursor:pointer;
-      box-shadow:0 2px 8px rgba(0,0,0,0.2);
+      box-shadow:0 2px 8px rgba(0,0,0.2);
       display:flex;
       flex-direction:column;
     }
@@ -135,14 +135,14 @@
       background:#fff;color:#222;
       border-radius:8px;
       overflow:hidden;
-      box-shadow:0 2px 8px rgba(0,0,0,0.3);
+      box-shadow:0 2px 8px rgba(0,0,0.3);
       cursor:pointer;
     }
     .card-head {
       background:#222;color:#fff;padding:10px 12px;display:flex;justify-content:space-between;align-items:center;
     }
-    .card-pid {font-weight:bold;font-size:24px;}
-    .card-list-price {font-size:24px;font-weight:bold;opacity:0.9;}
+    .card-pid {font-weight:bold;font-size:28px;}
+    .card-list-price {font-size:28px;font-weight:bold;opacity:0.9;}
     .discount-row {display:grid;grid-template-columns:1fr 1fr 1fr 1fr;}
     .discount-cell {padding:14px 4px;text-align:center;color:#fff;}
     .dis-72 {background:var(--dis72);}
@@ -189,7 +189,7 @@
     .btn-modal {background:var(--light-green);color:#fff;padding:9px 20px;border:none;border-radius:4px;cursor:pointer;}
     .btn-delete {background:var(--danger);color:#fff;border:none;padding:9px 16px;border-radius:4px;cursor:pointer;margin-left:8px;display:none;}
     .photo-list {display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;}
-    .photo-thumb {width:70px;height:70px;object-fit:cover;border-radius:4px;border:1px solid #333;}
+    .photo-thumb {width:70px;height:70;object-fit:cover;border-radius:4px;border:1px solid #333;}
     .photo-thumb-wrap {position:relative;}
     .photo-thumb-wrap .del {
       position:absolute;top:-6px;right:-6px;
@@ -207,7 +207,7 @@
       display:none;
       position:fixed;
       inset:0;
-      background:rgba(0,0,0,0.95);
+      background:rgba(0,0,0.95);
       z-index:2000;
       align-items:center;
       justify-content:center;
@@ -446,7 +446,7 @@
 // 自动清除旧缓存，解决登录卡住
 localStorage.removeItem("stock_sync_data");
 localStorage.removeItem("price_list_sync");
-// 你的API地址
+// 你提供的API地址已完整填入
 const API_URL = "https://script.google.com/macros/s/AKfycbxRfRfE5Fz7faElXukupovMZHwNiSJ2c2MOpKsBlegHdM6MYi4s6oNEuYyp69PjX4ZjOA/exec";
 const SYNC_KEY = "stock_sync_data";
 const PRICE_CACHE_KEY = "price_list_sync";
@@ -529,6 +529,7 @@ function login() {
   document.getElementById("welcomeText").innerText = "Welcome, " + currentUser.name;
   if(currentUser.avatar) document.getElementById("topAvatar").src = currentUser.avatar;
   if(currentUser.role !== "admin") document.getElementById("userMenuBtn").style.display = "none";
+  // 登录后自动加载库存
   loadLocalCache();
   fetchCloudData();
   fetchPriceSheet();
@@ -543,7 +544,6 @@ function logout() {
   document.getElementById("loginPwd").value = "";
 }
 
-// CSV解析通用
 function parseCSV(csvText){
   try {
     const lines = csvText.trim().split("\n").filter(r=>r);
@@ -563,7 +563,6 @@ function parseCSV(csvText){
   } catch(e){return [];}
 }
 
-// 读取库存表
 async function fetchCloudData(){
   if(isSyncing) return;
   isSyncing = true;
@@ -609,9 +608,9 @@ document.getElementById("refreshCloud").addEventListener("click", async()=>{
   await fetchPriceSheet();
   alert("Data refreshed");
 });
-document.getElementById("stockSearch").addEventListener("input",()=>{
+document.getElementById("stockSearch").addEventListener("input", ()=>{
   clearTimeout(stockDebounce);
-  stockDebounce = setTimeout(renderStock,300);
+  stockDebounce = setTimeout(renderStock, 300);
 });
 
 function renderAll(){
@@ -648,7 +647,7 @@ function renderStock(){
           </div>
           <div>
             <div class="price-sell">Sell: ${Number(item.sell||0).toFixed(2)}</div>
-            <div class="price-cash">Cash: ${Number(item.cash||0).toFixed(2)}</div>
+            <div class="price-cash">Cash: ${Number(item.cost||0).toFixed(2)}</div>
           </div>
         </div>
       </div>
@@ -739,7 +738,7 @@ document.getElementById("photoUpload").addEventListener("change", function(e){
   reader.readAsDataURL(file);
   this.value = "";
 });
-document.getElementById("addStockBtn").addEventListener("click",()=>{
+document.getElementById("addStockBtn").addEventListener("click", ()=>{
   currentEditId = null;
   tempPhotos = [];
   document.querySelectorAll("#stockModal input").forEach(inp=>inp.value="");
@@ -820,7 +819,7 @@ function delCat(name){
   saveLocalCache();
   renderCategory();
 }
-document.getElementById("saveCategoryBtn").addEventListener("click",()=>{
+document.getElementById("saveCategoryBtn").addEventListener("click", ()=>{
   const val = document.getElementById("categoryName").value.trim();
   if(!val){alert("Name empty");return;}
   if(currentEditId){
@@ -833,7 +832,7 @@ document.getElementById("saveCategoryBtn").addEventListener("click",()=>{
   renderCategory();
   document.getElementById("categoryModal").style.display = "none";
 });
-document.getElementById("addUserBtn").addEventListener("click",()=>{
+document.getElementById("addUserBtn").addEventListener("click", ()=>{
   currentEditId = null;
   document.getElementById("userName").value = "";
   document.getElementById("userPwd").value = "";
@@ -856,7 +855,7 @@ function delUser(un){
   saveLocalCache();
   renderUser();
 }
-document.getElementById("saveUserBtn").addEventListener("click",()=>{
+document.getElementById("saveUserBtn").addEventListener("click", ()=>{
   const un = document.getElementById("userName").value.trim();
   const pw = document.getElementById("userPwd").value.trim();
   const role = document.getElementById("userRole").value;
@@ -891,7 +890,7 @@ function saveProfile(){
   const avatarImg = document.getElementById("avatarImg").src;
   currentUser.avatar = avatarImg;
   const idx = localData.users.findIndex(u => u.username === currentUser.username);
-  if (idx > -1) localData.users[idx] = avatarImg;
+  if (idx > -1) localData.users[idx] = currentUser;
   saveLocalCache();
   document.getElementById("welcomeText").innerText = "Welcome, " + currentUser.name;
   alert("Profile saved");
@@ -911,7 +910,7 @@ function closeAllModal(){
 }
 document.querySelectorAll(".modal-close").forEach(x=>x.onclick = closeAllModal);
 
-// ===================== PRICE LIST 逻辑 =====================
+// ========= Price List 独立接口逻辑 =========
 async function fetchPriceSheet(){
   if(isSyncing) return;
   isSyncing = true;
@@ -956,7 +955,10 @@ async function syncPriceToSheet(){
   try{
     await fetch(API_URL, {
       method:"POST",
-      body: JSON.stringify({action:"updatePriceList", priceList:priceData})
+      body: JSON.stringify({
+        action:"updatePriceList",
+        priceList:priceData
+      })
     });
   }catch(e){console.log("Price sync fail",e);}
   isSyncing = false;
@@ -975,7 +977,7 @@ function renderPriceCard(){
   filter.forEach(item=>{
     const card = document.createElement("div");
     card.className = "price-card";
-    // 修改点：只输出数值，去掉 PID: / LIST PRICE: 文字，字号24px放大
+    // 已修改：只保留数字，去掉 PID: / LIST PRICE: 文字
     card.innerHTML = `
       <div class="card-head">
         <span class="card-pid">${item.pid}</span>
@@ -992,11 +994,11 @@ function renderPriceCard(){
     grid.appendChild(card);
   })
 }
-document.getElementById("pidSearch").addEventListener("input",()=>{
+document.getElementById("pidSearch").addEventListener("input", ()=>{
   clearTimeout(priceDebounce);
   priceDebounce = setTimeout(renderPriceCard, 300);
 });
-document.getElementById("addPriceBtn").addEventListener("click",()=>{
+document.getElementById("addPriceBtn").addEventListener("click", ()=>{
   currentEditPid = null;
   ["inputPid","inputListPrice","input72","input70","input68","input65"].forEach(id=>document.getElementById(id).value = "");
   document.getElementById("deletePriceBtn").style.display = "none";
@@ -1051,5 +1053,11 @@ document.getElementById("deletePriceBtn").addEventListener("click", async()=>{
   alert("Deleted");
 });
 
-// 页面初始化：登录成功自动加载Inventory商品
-window
+// 页面加载初始化
+window.onload = function(){
+  loadLocalCache();
+  loadLocalPriceCache();
+};
+</script>
+</body>
+</html
