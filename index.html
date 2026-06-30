@@ -538,12 +538,15 @@ function login() {
   document.getElementById("welcomeText").innerText = "Welcome, " + currentUser.name;
   if(currentUser.avatar) document.getElementById("topAvatar").src = currentUser.avatar;
   if(currentUser.role !== "admin") document.getElementById("userMenuBtn").style.display = "none";
-  loadLocalCache();
-  fetchCloudData();
-  fetchPriceSheet();
-  startSyncLoop();
+loadLocalCache();
+loadLocalPrice();
+// 延迟依次拉取云端，避免同时并发阻塞页面
+setTimeout(async ()=>{
+  await fetchCloudData();
+  await fetchPriceSheet();
+}, 100);
+startSyncLoop();
 }
-
 function logout() {
   currentUser = null;
   document.getElementById("loginPage").style.display = "flex";
@@ -612,6 +615,10 @@ function loadLocalCache(){
   if(currentUser){loadProfile();}
 }
 document.getElementById("refreshCloud").addEventListener("click", async()=>{
+  if(isSyncing) {
+    alert("Data syncing, please wait...");
+    return;
+  }
   await fetchCloudData();
   await fetchPriceSheet();
   alert("Data refreshed");
@@ -655,7 +662,7 @@ function renderStock(){
           </div>
           <div>
             <div class="price-sell">Sell: ${Number(item.sell||0).toFixed(2)}</div>
-            <div class="price-cash">Cash: ${Number(item.cost||0).toFixed(2)}</div>
+            <div class="price-cash">Cash: ${Number(item.cash||0).toFixed(2)}</div>
           </div>
         </div>
       </div>
@@ -1059,8 +1066,11 @@ document.getElementById("deletePriceBtn").addEventListener("click", async()=>{
 
 // 页面加载初始化
 window.onload = function(){
-  loadLocalCache();
-  loadLocalPrice();
+  // 未登录不主动渲染云端数据，只等待登录后加载，解决初始化加载卡死
+  if(currentUser) {
+    loadLocalCache();
+    loadLocalPrice();
+  }
 };
 </script>
 </body>
